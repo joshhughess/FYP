@@ -12,8 +12,19 @@ if(isset($_SESSION['username'])) {
 }else{
     $currentUser="";
 }
+echo "<p class='checkURL' style='display:none'>";
+if(isset($_GET['user'])){
+    $findFromURL ="SELECT * FROM conversations WHERE userID='".$_GET['user']."' OR user2ID='".$_GET['user']."'";
+    $res = mysqli_query($connect,$findFromURL);
+    if(mysqli_num_rows($res)>0) {
+        while ($row = mysqli_fetch_assoc($res)){
+            echo $row['conversationID'];
+        }
+    }
+}
+echo "</p>";
 $conversationArray = array();
-$checkUserHasMessages = "SELECT * FROM conversations WHERE userID='".$_SESSION['userID']."'";
+$checkUserHasMessages = "SELECT * FROM conversations WHERE userID='".$_SESSION['userID']."' OR user2ID='".$_SESSION['userID']."'";
 $res = mysqli_query($connect,$checkUserHasMessages);
 if(mysqli_num_rows($res)>0) {
     while ($row = mysqli_fetch_assoc($res)) {
@@ -23,18 +34,7 @@ if(mysqli_num_rows($res)>0) {
         array_push($conversationArray,$values);
     }
 }else{
-    $checkUserHasMessages = "SELECT * FROM conversations WHERE user2ID='".$_SESSION['userID']."'";
-    $res = mysqli_query($connect,$checkUserHasMessages);
-    if(mysqli_num_rows($res)>0) {
-        while ($row = mysqli_fetch_assoc($res)) {
-            $values=array();
-            array_push($values,$row['conversationID']);
-            array_push($values,$row['userID']);
-            array_push($conversationArray,$values);
-        }
-    }else {
-        echo "no messages yet";
-    }
+    echo "no messages yet";
 }
 echo "<table style='width:15%;float:left'>";
 $theConversations = array();
@@ -90,6 +90,11 @@ echo "</form></div>";
 <script>
     $(document).ready(function(){
         $('.message').hide();
+        var URLthing = $('.checkURL').html();
+        if(URLthing){
+            $('.conversation'+URLthing).show();
+            console.log("test");
+        }
         $('.cRow').click(function(){
             $('.message').hide();
             var convID = $(this).attr('convID');
