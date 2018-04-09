@@ -12,7 +12,6 @@ include('connect.php');
     }else{
         $currentUser="";
     }
-
 echo "<form method='post' action='meet.php?user=".$_GET['user']."'>";
 echo "<p>Select a date to book a climbing session with ".findUsername($_GET['user'])."</p>";
 echo "<p>Date: <input type='text' class='datepicker' name='date'></p>";
@@ -26,6 +25,10 @@ echo "<button type='submit' name='meetup'>Meet up</button>";
 echo "</form>";
 ?>
 <script>
+//    $(document).ready(function(){
+//        $('.datepicker').datepicker();
+//    });
+    $(document).ready(function(){
         $('.datepicker').pickadate({
             selectMonths: true, // Creates a dropdown to control month
             selectYears: 15, // Creates a dropdown of 15 years to control year,
@@ -46,4 +49,5 @@ echo "</form>";
             ampmclickable: true,    // make AM PM clickable
             aftershow: function(){} //Function for after opening timepicker
         });
+    });
 </script>

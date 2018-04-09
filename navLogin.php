@@ -7,7 +7,7 @@
  */
 echo '
 
-  <nav>
+  <nav class="green darken-2">
     <div class="nav-wrapper">
       <a href="index.php" class="brand-logo">Logo</a>
       <ul id="nav-mobile" class="right hide-on-med-and-down">

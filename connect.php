@@ -74,4 +74,14 @@ function findUserEmail($userID)
         }
     }
 }
+function findClimbName($climbID){
+    global $connect;
+    $sql = "SELECT * FROM climbs WHERE climbID='".$climbID."'";
+    $res = mysqli_query($connect, $sql);
+    if(mysqli_num_rows($res)>0){
+        while($row = mysqli_fetch_assoc($res)){
+            return $row['name'];
+        }
+    }
+}
 ?>
