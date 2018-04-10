@@ -11,6 +11,14 @@ echo '
     <div class="nav-wrapper">
       <a href="index.php" class="brand-logo">Logo</a>
       <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <li>
+            <form method="post" action="searchResults.php">
+                <div class="input-field">
+                  <input id="search" name="search" autocomplete="off" type="search" class="autocomplete" required>
+                  <label class="label-icon" for="search"><i class="material-icons">search</i></label>
+                </div>
+            </form>           
+        </li> 
         <li><a href="climbers.php">All Climbers</a></li>
         <li><a href="climbs.php">Climbs</a></li>
         <li><a href="following.php">Following</a></li>
@@ -30,3 +38,18 @@ echo '
         opacity: 100 !important;
     }
 </style>
+<script>
+    $(document).ready(function(){
+        var theNames;
+        $.ajax({url:"climbNames.php",success:function(result){
+            theNames = result;
+            var dataCountry = {};
+            for (var i = 0; i < theNames.length; i++) {
+                dataCountry[theNames[i][0]] = theNames[i][1];
+            }
+            $('input.autocomplete').autocomplete({
+                data: dataCountry,
+            });
+        }});
+    });
+</script>
