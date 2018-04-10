@@ -18,17 +18,58 @@ $postVisAll=null;
 $allowAllFollow=null;
 if(isset($_POST['postVisAll'])){
     $postVisAll = $_POST['postVisAll'];
+}else{
+    $postVisAll = "N";
 }
 if(isset($_POST['allowAllFollow'])){
     $allowAllFollow = $_POST['allowAllFollow'];
+}else{
+    $allowAllFollow = "N";
+}
+$pref_isSport=null;
+$pref_isTrad=null;
+$pref_isTopRope=null;
+$pref_isMountaineering=null;
+$pref_isBouldering=null;
+$pref_isFreeSolo=null;
+if(isset($_POST['isSport'])){
+    $pref_isSport = $_POST['isSport'];
+}else{
+    $pref_isSport = "N";
+}
+if(isset($_POST['isTrad'])){
+    $pref_isTrad = $_POST['isTrad'];
+}else{
+    $pref_isTrad = "N";
+}
+if(isset($_POST['isTopRope'])){
+    $pref_isTopRope = $_POST['isTopRope'];
+}else{
+    $pref_isTopRope = "N";
+}
+if(isset($_POST['isMountaineering'])){
+    $pref_isMountaineering = $_POST['isMountaineering'];
+}else{
+    $pref_isMountaineering = "N";
+}
+if(isset($_POST['isBouldering'])){
+    $pref_isBouldering = $_POST['isBouldering'];
+}else{
+    $pref_isBouldering = "N";
+}
+if(isset($_POST['isFreeSolo'])){
+    $pref_isFreeSolo = $_POST['isFreeSolo'];
+}else{
+    $pref_isFreeSolo = "N";
 }
 if(isset($_POST['post'])){
     //check first to see if preference is there
+    echo $pref_isSport. " and ".$pref_isFreeSolo;
     $check = "SELECT * FROM preferences WHERE username='$username'";
     $res = mysqli_query($connect,$check);
     if(mysqli_num_rows($res)>0) {
         while ($row = mysqli_fetch_assoc($res)) {
-            $update = "UPDATE preferences SET postVisAll='$postVisAll', allowAllFollow='$allowAllFollow' WHERE username='$username'";
+            $update = "UPDATE preferences SET postVisAll='$postVisAll', allowAllFollow='$allowAllFollow', isSport='$pref_isSport', isTrad='$pref_isTrad', isTopRope='$pref_isTopRope', isBouldering='$pref_isBouldering', isMountaineering='$pref_isMountaineering', isFreeSolo='$pref_isFreeSolo' WHERE username='$username'";
             if (mysqli_query($connect, $update)) {
                 // send email
                 $to = $email;

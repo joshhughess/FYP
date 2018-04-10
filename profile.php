@@ -94,7 +94,7 @@ if(mysqli_num_rows($res)>0){
 ?>
 <h6>Most popular climbs by you!</h6>
 <?php
-$sql = "SELECT climbID, COUNT(climbID) AS 'value_occurrence' FROM hasclimbed WHERE userID='".$_SESSION['userID']."' GROUP BY climbID ORDER BY 'value_occurrence' DESC LIMIT 2";
+$sql = "SELECT climbID, COUNT(climbID) AS 'value_occurrence' FROM hasclimbed WHERE userID='".$_SESSION['userID']."' GROUP BY climbID ORDER BY 'value_occurrence' DESC LIMIT 3";
 $res = mysqli_query($connect,$sql);
 $popularArray = array();
 if(mysqli_num_rows($res)>0){
@@ -147,12 +147,68 @@ for($i=0;$i<sizeof($popularArray);$i++){
     }
 }
 ?>
-<h6>Suggested climbs based on your most popular climbed</h6>
 <?php
-$values = array_count_values($climbingTypeArray);
+echo "<h6>Suggested climbs based on your previous climb types</h6>";
+$allHasClimbedArray = array();
+$findAllHasClimbedByUser = "SELECT * FROM hasClimbed WHERE userID='".$_SESSION['userID']."'";
+$res = mysqli_query($connect, $findAllHasClimbedByUser);
+if(mysqli_num_rows($res)>0){
+    while($row = mysqli_fetch_assoc($res)){
+        array_push($allHasClimbedArray,$row['climbID']);
+    }
+}
+//var_dump($allHasClimbedArray);
+$allTypesArray = array();
+$allGradesArray = array();
+for($i=0;$i<sizeof($allHasClimbedArray);$i++){
+    $findAllTypes = "SELECT * FROM climbs WHERE climbID='".$allHasClimbedArray[$i]."'";
+    $res = mysqli_query($connect,$findAllTypes);
+    if(mysqli_num_rows($res)>0){
+        while($row = mysqli_fetch_assoc($res)){
+            if($row['isSport']==1){
+                array_push($allTypesArray,"isSport");
+            }
+            if($row['isTrad']==1){
+                array_push($allTypesArray,"isTrad");
+            }
+            if($row['isTopRope']==1){
+                array_push($allTypesArray,"isTopRope");
+            }
+            if($row['isBouldering']==1){
+                array_push($allTypesArray,"isBouldering");
+            }
+            if($row['isMountaineering']==1){
+                array_push($allTypesArray,"isMountaineering");
+            }
+            if($row['isFreeSolo']==1){
+                array_push($allTypesArray,"isFreeSolo");
+            }
+            array_push($allGradesArray,$row['grade']);
+        }
+    }
+}
+//find most popular climbed types
+$values = array_count_values($allTypesArray);
 arsort($values);
 $popular = array_slice(array_keys($values), 0, 3, true);
-$findRandomClimb = "SELECT * FROM climbs WHERE $popular[0]='1' AND climbID<>'".$popularArray[0]."' OR climbID<>'".$popularArray[1]."' OR $popular[1]='1' AND climbID<>'".$popularArray[0]."' OR climbID<>'".$popularArray[1]."' OR $popular[2]='1' AND climbID<>'".$popularArray[0]."' OR climbID<>'".$popularArray[1]."' ORDER BY RAND() LIMIT 1";
+//find all climbID's climbed
+$values = array_count_values($allHasClimbedArray);
+arsort($values);
+$foundValuesArray = array();
+$foundValuesArray = array_keys($values);
+//make the sql code dynamic to the different number of climbs per person
+$findRandomClimb = "SELECT * FROM climbs WHERE";
+for($i=0;$i<sizeof($popular);$i++) {
+    if($i==0) {
+        $findRandomClimb .= " $popular[$i]=1";
+    }else{
+        $findRandomClimb .= " OR $popular[$i]=1";
+    }
+    for ($j = 0; $j < sizeof($foundValuesArray); $j++) {
+        $findRandomClimb .= " AND climbID<>'".$foundValuesArray[$j]."'";
+    }
+}
+$findRandomClimb .= " ORDER BY RAND() LIMIT 1";
 $res = mysqli_query($connect, $findRandomClimb);
 if(mysqli_num_rows($res)>0){
     echo "<ul class='collapsible'>";
@@ -191,6 +247,130 @@ if(mysqli_num_rows($res)>0){
 }else{
     echo "unable to find random climb based on your previous climbed";
 }
+
+echo "<h6>Suggested climbs based on your preferences</h6>";
+$preferenceArray = array();
+$findPreferences = "SELECT * FROM preferences WHERE username='".$_SESSION['username']."'";
+$res = mysqli_query($connect,$findPreferences);
+if(mysqli_num_rows($res)>0) {
+    while ($row = mysqli_fetch_assoc($res)) {
+        if ($row['isSport'] == "Y") {
+            array_push($preferenceArray, "isSport");
+        }
+        if ($row['isTrad'] == "Y") {
+            array_push($preferenceArray, "isTrad");
+        }
+        if ($row['isTopRope'] == "Y") {
+            array_push($preferenceArray, "isTopRope");
+        }
+        if ($row['isBouldering'] == "Y") {
+            array_push($preferenceArray, "isBouldering");
+        }
+        if ($row['isMountaineering'] == "Y") {
+            array_push($preferenceArray, "isMountaineering");
+        }
+        if ($row['isFreeSolo'] == "Y") {
+            array_push($preferenceArray, "isFreeSolo");
+        }
+    }
+}
+$findSuggestedBasedOnPref = "SELECT * FROM climbs WHERE";
+for($i=0;$i<sizeof($preferenceArray);$i++) {
+    if($i==0) {
+        $findSuggestedBasedOnPref .= " $preferenceArray[$i]=1";
+    }else{
+        $findSuggestedBasedOnPref .= " OR $preferenceArray[$i]=1";
+    }
+    for ($j = 0; $j < sizeof($foundValuesArray); $j++) {
+        $findSuggestedBasedOnPref .= " AND climbID<>'".$foundValuesArray[$j]."'";
+    }
+}
+$findSuggestedBasedOnPref .= " ORDER BY RAND() LIMIT 1";
+$res = mysqli_query($connect,$findSuggestedBasedOnPref);
+if(mysqli_num_rows($res)>0){
+    echo "<ul class='collapsible'>";
+    while($row = mysqli_fetch_assoc($res)){
+        echo "<li><div class='collapsible-header' style='display: block'><h5>".$row['name']." - ".$row['grade']."<a href='climb.php?id=".$row['climbID']."' class='right'><i class='material-icons' style='color:rgba(0,0,0,0.87)'>info_outline</i></a></h5></div>";
+        echo "<div class='collapsible-body'><h6>Climbing Types</h6><ul class='collection'>";
+        if($row['isSport']==1){
+            echo "<li class='collection-item'>Sport</li>";
+        }
+        if($row['isTrad']==1){
+            echo "<li class='collection-item'>Trad</li>";
+        }
+        if($row['isTopRope']==1){
+            echo "<li class='collection-item'>Top Rope</li>";
+        }
+        if($row['isBouldering']==1){
+            echo "<li class='collection-item'>Bouldering</li>";
+        }
+        if($row['isMountaineering']==1){
+            echo "<li class='collection-item'>Mountaneering</li>";
+        }
+        if($row['isFreeSolo']==1){
+            echo "<li class='collection-item'>Free Solo</li>";
+        }
+        echo "</ul>";
+        echo $row['information']."</div>";
+        echo "</li>";
+        echo "</ul>";
+    }
+}
+echo "<h6>Suggested climbs based on previous grades</h6>";
+$gradeValues = array_count_values($allGradesArray);
+arsort($gradeValues);
+$theGradesClimbed = array();
+$theGradesClimbed = array_keys($gradeValues);
+$theGradeNumbers = array();
+for($i=0;$i<sizeof($theGradesClimbed);$i++){
+    array_push($theGradeNumbers, preg_replace("/[^0-9,.]/", "", $theGradesClimbed[$i]));
+}
+$gradeNumberGroup = array_count_values($theGradeNumbers);
+arsort($gradeNumberGroup);
+$theGradeNumberValues = array();
+$theGradeNumberValues = array_keys($gradeNumberGroup);
+$findSuggestedBasedOnPrevGrades = "SELECT * FROM climbs WHERE";
+for($i=0;$i<sizeof($theGradeNumberValues);$i++) {
+    if($i==0) {
+        $findSuggestedBasedOnPrevGrades .= " grade LIKE '%$theGradeNumberValues[$i]%'";
+    }else{
+        $findSuggestedBasedOnPrevGrades .= " OR grade LIKE '%$theGradeNumberValues[$i]%'";
+    }
+    for ($j = 0; $j < sizeof($foundValuesArray); $j++) {
+        $findSuggestedBasedOnPrevGrades .= " AND climbID<>'".$foundValuesArray[$j]."'";
+    }
+}
+$findSuggestedBasedOnPrevGrades .= " ORDER BY RAND() LIMIT 1";
+$res = mysqli_query($connect,$findSuggestedBasedOnPrevGrades);
+if(mysqli_num_rows($res)>0){
+    echo "<ul class='collapsible'>";
+    while($row = mysqli_fetch_assoc($res)){
+        echo "<li><div class='collapsible-header' style='display: block'><h5>".$row['name']." - ".$row['grade']."<a href='climb.php?id=".$row['climbID']."' class='right'><i class='material-icons' style='color:rgba(0,0,0,0.87)'>info_outline</i></a></h5></div>";
+        echo "<div class='collapsible-body'><h6>Climbing Types</h6><ul class='collection'>";
+        if($row['isSport']==1){
+            echo "<li class='collection-item'>Sport</li>";
+        }
+        if($row['isTrad']==1){
+            echo "<li class='collection-item'>Trad</li>";
+        }
+        if($row['isTopRope']==1){
+            echo "<li class='collection-item'>Top Rope</li>";
+        }
+        if($row['isBouldering']==1){
+            echo "<li class='collection-item'>Bouldering</li>";
+        }
+        if($row['isMountaineering']==1){
+            echo "<li class='collection-item'>Mountaneering</li>";
+        }
+        if($row['isFreeSolo']==1){
+            echo "<li class='collection-item'>Free Solo</li>";
+        }
+        echo "</ul>";
+        echo $row['information']."</div>";
+        echo "</li>";
+        echo "</ul>";
+    }
+}
 ?>
 <h5>Update your preferences here:</h5>
 
@@ -208,6 +388,55 @@ if(mysqli_num_rows($res)>0){
             <p>
                 <input type='checkbox' class='filled-in' id='filled-in-box1' name='allowAllFollow' value='Y'>
                 <label for='filled-in-box1'>Allow anyone to follow me?</label>
+            </p>
+        </div>
+    </div>
+    <h6>Climbing types</h6>
+    <div class="row">
+        <div class="col s6">
+            <p>
+                <input type='checkbox' class='filled-in' id='filled-in-isSport' name='isSport' value='Y'>
+                <label for='filled-in-isSport'>Sport</label>
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s6">
+            <p>
+                <input type='checkbox' class='filled-in' id='filled-in-isTrad' name='isTrad' value='Y'>
+                <label for='filled-in-isTrad'>Trad</label>
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s6">
+            <p>
+                <input type='checkbox' class='filled-in' id='filled-in-isBouldering' name='isBouldering' value='Y'>
+                <label for='filled-in-isBouldering'>Bouldering</label>
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s6">
+            <p>
+                <input type='checkbox' class='filled-in' id='filled-in-isTopRope' name='isTopRope' value='Y'>
+                <label for='filled-in-isTopRope'>Top Rope</label>
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s6">
+            <p>
+                <input type='checkbox' class='filled-in' id='filled-in-isMountaineering' name='isMountaineering' value='Y'>
+                <label for='filled-in-isMountaineering'>Mountaineering</label>
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s6">
+            <p>
+                <input type='checkbox' class='filled-in' id='filled-in-isFreeSolo' name='isFreeSolo' value='Y'>
+                <label for='filled-in-isFreeSolo'>Free Solo</label>
             </p>
         </div>
     </div>
