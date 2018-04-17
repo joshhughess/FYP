@@ -5,7 +5,10 @@
  * Date: 10/11/2017
  * Time: 11:35
  */
-echo '<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+echo '
+<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+<link rel="icon" href="images/favicon.ico" type="image/x-icon">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
             
             <!--Import materialize.css-->
             <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
@@ -16,7 +19,6 @@ echo '<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="
 <link rel="stylesheet" href="rating/dist/themes/fontawesome-stars.css">
         </head>
         <!--Import jQuery before materialize.js-->
-        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script type="text/javascript" src="fullcalendar/lib/jquery.min.js"></script>
 <script type="text/javascript" src="fullcalendar/lib/moment.min.js"></script>
 <script type="text/javascript" src="fullcalendar/fullcalendar.js"></script>

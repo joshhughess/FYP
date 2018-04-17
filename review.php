@@ -10,6 +10,7 @@ if(isset($_SESSION['username'])){
 }
 $username = $_SESSION['username'];
 if($_POST['climbID']){
+    echo "<title>Review - ".findClimbName($_POST['climbID'])."</title>";
     $sql = "INSERT INTO hasClimbed(climbID,userID) VALUES ('".$_POST['climbID']."','".$_SESSION['userID']."')";
     $res = mysqli_query($connect,$sql);
     if($res){

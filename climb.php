@@ -28,6 +28,7 @@ if($_GET['id']){
     $res = mysqli_query($connect,$sql);
     if(mysqli_num_rows($res)>0){
         while($row = mysqli_fetch_assoc($res)) {
+            echo "<title>".$row['name']."</title>";
                 echo "<form action='review.php' method='post'><h4>" . $row['name'] . " - ".$row['grade']."<input type='text' hidden name='climbID' class='climbID' value='".$row['climbID']."'><button class='btn waves-effect waves-light right' type='submit' name='hasClimbed'>Climbed this route?</button></form></h4>";
             echo "<h6>Climbing Types</h6><ul class='collection'>";
             if($row['isSport']==1){

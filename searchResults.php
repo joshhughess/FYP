@@ -8,10 +8,11 @@ if(isset($_SESSION['username'])){
 }else{
     include('nav.php');
 }
+echo "<title>Search Results</title>";
+ob_start();
 $username = $_SESSION['username'];
 
 $post = mysqli_real_escape_string($connect, $_POST['search']);
-
 echo "<h3>You've searched for '".$post."'</h3>";
 
 //search users exact

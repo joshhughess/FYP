@@ -12,22 +12,25 @@ include('connect.php');
     }else{
         $currentUser="";
     }
-echo "<form method='post' action='meet.php?user=".$_GET['user']."'>";
+    echo "<title>Meetup</title>";
+echo "<form method='post' class='meeting' action='meet.php?user=".$_GET['user']."'>";
 echo "<p>Select a date to book a climbing session with ".findUsername($_GET['user'])."</p>";
-echo "<p>Date: <input type='text' class='datepicker' name='date'></p>";
+echo "<p>Date: <input type='text' class='datepicker' name='date' required></p>";
 echo "<p>Select a start time</p>";
-echo "<input type='text' class='timepicker' name='startTime'>";
+echo "<input type='text' class='timepicker startTime' name='startTime' required>";
 echo "<p>Select a end time</p>";
-echo "<input type='text' class='timepicker' name='endTime'>";
+echo "<input type='text' class='timepicker endTime' name='endTime' required>";
 echo "<p>Name of place</p>";
-echo "<input type='text' name='placeName'>";
-echo "<button type='submit' name='meetup'>Meet up</button>";
+echo "<input type='text' name='placeName' id='placeName' autocomplete='off' required>";
+echo "<button type='button' name='meetup' id='meetup'>Meet up</button>";
 echo "</form>";
+echo '<div id="modal1" class="modal">
+        <div class="modal-content">
+
+        </div>
+    </div>';
 ?>
 <script>
-//    $(document).ready(function(){
-//        $('.datepicker').datepicker();
-//    });
     $(document).ready(function(){
         $('.datepicker').pickadate({
             selectMonths: true, // Creates a dropdown to control month
@@ -49,5 +52,50 @@ echo "</form>";
             ampmclickable: true,    // make AM PM clickable
             aftershow: function(){} //Function for after opening timepicker
         });
+        var theNames;
+        var data = {};
+        $.ajax({url:"names.php?climb",success:function(result){
+            theNames = result;
+            for (var i = 0; i < theNames.length; i++) {
+                data[theNames[i][0]] = theNames[i][1];
+            }
+            $('#placeName').autocomplete({
+                data: data,
+            });
+        }});
+        $('#meetup').on('click',function(){
+            if($('.datepicker').val()==""){
+                $('.modal').modal();
+                $('.modal').modal('open');
+                $('.modal-content').html("<p>Please make enter a date</p>");
+            }else{
+                if($('.startTime').val()==""){
+                    $('.modal').modal();
+                    $('.modal').modal('open');
+                    $('.modal-content').html("<p>Please make enter a start time</p>");
+                }else {
+                    if($('.endTime').val()==""){
+                        $('.modal').modal();
+                        $('.modal').modal('open');
+                        $('.modal-content').html("<p>Please make enter an end time</p>");
+                    }else {
+                        var isFound=false;
+                        for (var i = 0; i < theNames.length; i++) {
+                            if ($('#placeName').val() == theNames[i][0]) {
+                                isFound=true;
+                                console.log("found");
+                            }
+                        }
+                        if(isFound){
+                            $('.meeting').submit();
+                        }else {
+                            $('.modal').modal();
+                            $('.modal').modal('open');
+                            $('.modal-content').html("<p>Please make sure that the name of location is an existing place from the dropdown menu</p>");
+                        }
+                    }
+                }
+            }
+        })
     });
 </script>

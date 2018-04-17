@@ -9,8 +9,10 @@ if(isset($_SESSION['username'])){
     include('nav.php');
 }
 $username = $_SESSION['username'];
+echo "<title>All Climbs</title>";
 $sql = "SELECT * FROM climbs";
 $res = mysqli_query($connect,$sql);
+echo "</nav>";
 if(mysqli_num_rows($res)>0){
     echo "<ul class='collapsible'>";
     while($row = mysqli_fetch_assoc($res)){

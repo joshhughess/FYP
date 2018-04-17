@@ -1,12 +1,6 @@
 <?php
 include 'connect.php';
 $connect = mysqli_connect($host,$userName,$password, $db);
-include('styleLinks.php');
-if(isset($_SESSION['username'])){
-    include('navLogin.php');
-}else{
-    include('nav.php');
-}
 if(isset($_SESSION['username'])) {
     $currentUser = $_SESSION['username'];
 }else{
@@ -21,7 +15,6 @@ $checkStartDateBetween = array();
 $checkEndDateBetween = array();
 $checkDatesOutside = array();
 if($isAfter==1){
-    echo "end date after";
     $sql = "SELECT * FROM meetings WHERE userID='".$_SESSION['userID']."'";
     $res = mysqli_query($connect,$sql);
     if(mysqli_num_rows($res)>0) {
@@ -38,10 +31,6 @@ if($isAfter==1){
             }else{
                 array_push($checkEndDateBetween,'false');
             }
-            echo "<p>startDateChosen : ".$startDateChose->format('Y-m-d H:i:s')."</p>";
-            echo "<p>startDateFound : ".$row['start']."</p>";
-            echo "<p>endDateChosen : ".$endDateChose->format('Y-m-d H:i:s')."</p>";
-            echo "<p>endDateFound : ".$row['end']."</p>";
             //check dates are not on either side of dates in database
             if($startDateChose->format('Y-m-d H:i:s') <= $row['start'] && $endDateChose->format('Y-m-d H:i:s') >= $row['end']){
                 array_push($checkDatesOutside,'true');
@@ -50,7 +39,6 @@ if($isAfter==1){
             }
         }
     }
-    var_dump($checkDatesOutside);
     if (count(array_unique($checkStartDateBetween)) === 1 && end($checkStartDateBetween) === 'true') {
         $allStartTaken = true;
     }else{
@@ -93,7 +81,13 @@ if($isAfter==1){
                 $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
                 //*********************redirect is dodgy!!!!!
                 if(mail($to,$subject,$message,$headers)){
-                    header('Location: userProfile.php');
+                    $true = true;
+//                    header("Location: userProfile.php");
+                }
+                if($true){
+                    echo "true";
+                    header("Location:profile.php");
+                    exit();
                 }
             }
         }
@@ -101,10 +95,4 @@ if($isAfter==1){
 }else{
     echo "end date before";
 }
-//else
-//check doesn't exist
-//check time available for user1
-//check time available for user2
-//$sql = "INSERT INTO meetings(userID,user2id,meetStartDate,meetEndDate,location) VALUES('".$_SESSION['userID']."','".$_POST['user2id']."','".$_POST['date']."','".$_POST['startTime']."','".$_POST['endTime']."','".$_POST['placeName']."')"
-
 ?>

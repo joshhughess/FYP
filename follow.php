@@ -18,7 +18,7 @@ if($connect)
         if (mysqli_num_rows($r) > 0) {
             echo "table not empty";
             while ($row = mysqli_fetch_assoc($r)) {
-                if ($row['allowAllFollow'] == "") {
+                if ($row['allowAllFollow'] == "N") {
                     $follow = "INSERT INTO follow(follower_uName,following_uName,accepted) VALUES('$followerName','$followingName','0')";
                     if (mysqli_query($connect, $follow)) {
                         echo "pending request";

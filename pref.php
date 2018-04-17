@@ -64,7 +64,6 @@ if(isset($_POST['isFreeSolo'])){
 }
 if(isset($_POST['post'])){
     //check first to see if preference is there
-    echo $pref_isSport. " and ".$pref_isFreeSolo;
     $check = "SELECT * FROM preferences WHERE username='$username'";
     $res = mysqli_query($connect,$check);
     if(mysqli_num_rows($res)>0) {
@@ -87,6 +86,14 @@ if(isset($_POST['post'])){
             } else {
                 echo "There is an error somewhere";
             }
+        }
+    }else{
+        $insertPref = "INSERT INTO preferences(username,postVisAll,allowAllFollow,isSport,isTrad,isTopRope,isBouldering,isMountaineering,isFreeSolo) VALUES('".$_SESSION['username']."','".$postVisAll."','".$allowAllFollow."','".$pref_isSport."','".$pref_isTrad."','".$pref_isTopRope."','".$pref_isBouldering."','".$pref_isMountaineering."','".$pref_isFreeSolo."')";
+        $res = mysqli_query($connect,$insertPref);
+        if($res){
+            header("Location:profile.php");
+        }else{
+            echo mysqli_error($connect);
         }
     }
 }elseif(isset($_POST['changePass'])){
