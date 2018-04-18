@@ -735,6 +735,9 @@ if(mysqli_num_rows($res)>0){
     <form id='logout' action='logout.php' method='post'>
         <button type='submit' class='btn waves-effect waves-light' name='submit' onClick='logout.php'>Logout</button>
     </form>
+    <form id='deactivate' action='deactivate.php' method='post'>
+    <button type='submit' class='btn waves-effect red' name='deactivate' onClick='deactivate.php'>Deactivate acount</button>
+</form>
 </div>
 <style>
     .grayscale{

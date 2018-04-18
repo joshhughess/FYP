@@ -9,7 +9,7 @@ if(isset($_SESSION['username'])){
 }
 ?>
 <body onload="captcha()">
-<form id="form1" method="post" name="contactForm" action="register.php">
+<form id="form1" class="registerForm" method="post" name="contactForm" action="register.php">
 <p>Please enter your contact details to register an account and be able to upload news to the website:</p>
 <p>First Name:</p>
 <input type="text" required placeholder="Enter your First Name" maxlength="30" name="fName">
@@ -24,9 +24,9 @@ if(isset($_SESSION['username'])){
 <input type="text" id="mainCaptcha" readonly class="noselect">
 <input type="image" alt="refresh" src="images/refresh.jpg" id="refresh" onClick="captcha();" />
 <p>Enter the captcha code above here:</p>
-<p><input id="userInput" type="text" placeholder="Enter the CAPTCHA here" required><img src="images/tick.png" id="tick" style="display:none;width: 21px;"></p>
+<p><input id="userInput" type="text" placeholder="Enter the CAPTCHA here" required><i class="material-icons" id="tick" style="display:none">check</i></p>
 <p><input type="button" value="Check Captcha" onClick="validateForm(); if(validateForm()){$('#tick').show();}" name="checkCaptcha"></p>
-<p><input type="submit" value="Submit" name="submit"></p>
+    <p><button class="btn sendRegister" name="submit">Submit</button></p>
 </form>
 <style>
     #mainCaptcha
@@ -36,6 +36,16 @@ if(isset($_SESSION['username'])){
     }
 </style>
 <script>
+    $(document).ready(function(){
+       $('.sendRegister').on('click',function(){
+           if(validateForm()){
+               console.log("check");
+               $('.registerForm').submit();
+           }else{
+               alert("Captcha is incorrect");
+           }
+       });
+    });
     var alpha=['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B',  'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
     var randomLetter = alpha[Math.floor(Math.random() * alpha.length)];
     function captcha()

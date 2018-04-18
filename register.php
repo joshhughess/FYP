@@ -16,7 +16,8 @@ if($connect)
         $email = mysqli_real_escape_string($connect, $_POST['email']);
         $testUserName = mysqli_real_escape_string($connect, $_POST['usernameI']);
         $testPassword = mysqli_real_escape_string($connect, $_POST['passwordI']);
-        $sql = "INSERT INTO users(firstName, lastName, emailAddress, username, password) VALUES('$firstName','$secondName','$email','$testUserName', '$testPassword')";
+        $encrypt =  password_hash($testPassword, PASSWORD_DEFAULT);
+        $sql = "INSERT INTO users(firstName, lastName, emailAddress, username, password) VALUES('$firstName','$secondName','$email','$testUserName', '$encrypt')";
         $_SESSION['username'] = $testUserName;
 
         if (mysqli_query($connect, $sql)) {
@@ -26,7 +27,7 @@ if($connect)
                 echo "We created your account to login click here";
                 echo "<form action='connect.php' method='post'>
 <input type='text' hidden value='".$testUserName."' name='username'>
-<input type='text' hidden value='".$testPassword."' name='password'>
+<input type='text' hidden value='".$encrypt."' name='password'>
 <button type='submit' class='btn' name='submit'>Login</button>
 </form>";
             }else{

@@ -16,24 +16,33 @@ if($connect)
         $dateTime = date("Y-m-d h:i:s");
         $testUserName = mysqli_real_escape_string($connect,$_POST['username']);
 		$testPassword = mysqli_real_escape_string($connect,$_POST['password']);
-		$sql = "SELECT * FROM users WHERE '$testUserName' = username AND '$testPassword' = password";
+        $encrypt =  password_hash($testPassword, PASSWORD_DEFAULT);
+		$sql = "SELECT * FROM users WHERE '$testUserName' = username";
 		$sel = mysqli_query($connect,$sql);
-		$checkUser = mysqli_fetch_array($sel);
-			if($checkUser>0)
-			{
-			    $updateActivity = "UPDATE users SET lastActive='".$dateTime."' WHERE username='".$testUserName."'";
-                $res = mysqli_query($connect,$updateActivity);
-                if(!$res){echo mysqli_error($connect);}
-                $_SESSION['username']=$testUserName;
-                $_SESSION['userID']=$checkUser['userID'];
-                $_SESSION['email']=$checkUser['emailAddress'];
-                header('Location: index.php');
-			}
-			else
-			{
-				echo "Sorry this is incorrect. ";
-				echo "<a href='index.php'>Go back and try again</a>";
-			}
+		if(mysqli_num_rows($sel)>0) {
+            while ($row = mysqli_fetch_assoc($sel)) {
+                if (password_verify($testPassword, $row['password'])) {
+                    $updateActivity = "UPDATE users SET lastActive='" . $dateTime . "' WHERE username='" . $testUserName . "'";
+                    $res = mysqli_query($connect, $updateActivity);
+                    if (!$res) {
+                        echo mysqli_error($connect);
+                    }
+                    $_SESSION['username'] = $testUserName;
+                    $_SESSION['userID'] = $row['userID'];
+                    $_SESSION['email'] = $row['emailAddress'];
+                    header('Location: index.php');
+
+                } else {
+                    echo 'Invalid password.';
+                    echo "Sorry this is incorrect. ";
+                    echo "<a href='index.php'>Go back and try again</a>";
+                }
+
+
+            }
+        }
+
+
     }
 mysqli_close($connect);
 }
