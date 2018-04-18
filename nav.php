@@ -7,12 +7,12 @@
  */
 echo '  
   <ul id="dropdown1" class="dropdown-content">
-  <li><form action="connect.php" method="post" id="signInForm">
+  <li><form autocomplete="off" action="connect.php" method="post" id="signInForm">
     <div class="input-field">
-        <input type="text" name="username" placeholder="username">
+        <input type="text" name="username" placeholder="username" autocomplete="off">
     </div>
     <div class="input-field">
-        <input type="password" name="password" placeholder="password">
+        <input type="password" name="password" placeholder="password" autocomplete="off">
     </div>
     <button class="btn waves-effect waves-light" type="submit" name="submit" onclick="connect.php">Login
         <i class="material-icons right">send</i>
@@ -40,7 +40,7 @@ echo '
         <li><a href="climbers.php">All Climbers</a></li>
         <li><a href="climbs.php">Climbs</a></li>
         <li><a href = "registerForm.php">Register an account</a></li>
-        <li><a class="dropdown-button" data-activates="dropdown1">Login<i class="material-icons right">arrow_drop_down</i></a></li>
+        <li><a class="dropdown-button" data-activates="dropdown1" data-beloworigin="true">Login<i class="material-icons right">arrow_drop_down</i></a></li>
       </ul>
     </div>
   </nav>';
@@ -50,3 +50,8 @@ echo '
         cursor:default;
     }
 </style>
+<script>
+    $('.dropdown-content').on('click', function(event) {
+        event.stopPropagation();
+    });
+</script>

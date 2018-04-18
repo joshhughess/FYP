@@ -2,28 +2,48 @@
 include 'connect.php';
 
 $connect = mysqli_connect($host,$userName,$password, $db);
-
-function getAllVotes($id)
-	{
-	/**
-	Returns an array whose first element is votes_up and the second one is votes_down
-	**/
+if(isset($_GET['post'])) {
+    function getAllVotes($id)
+    {
+        /**
+         * Returns an array whose first element is votes_up and the second one is votes_down
+         **/
         global $connect;
         $votes = array();
-	$q = "SELECT * FROM post WHERE postID = $id";
-	$r = mysqli_query($connect, $q);
-	if(mysqli_num_rows($r)==1)//id found in the table
-	{
-		$row = mysqli_fetch_assoc($r);
-		$votes[0] = $row['votesUp'];
-		$votes[1] = $row['votesDown'];
-		return $votes;
-	}
-	else
-	{
-		echo "Something went wrong";
-	}
-	}
+        $q = "SELECT * FROM post WHERE postID = $id";
+        $r = mysqli_query($connect, $q);
+        if (mysqli_num_rows($r) == 1)//id found in the table
+        {
+            $row = mysqli_fetch_assoc($r);
+            $votes[0] = $row['votesUp'];
+            $votes[1] = $row['votesDown'];
+            return $votes;
+        } else {
+            echo "Something went wrong";
+        }
+    }
+}elseif(isset($_GET['comment'])){
+    function getAllVotes($id)
+    {
+        /**
+         * Returns an array whose first element is votes_up and the second one is votes_down
+         **/
+        global $connect;
+        $votes = array();
+        $q = "SELECT * FROM comments WHERE commentID= $id";
+        $r = mysqli_query($connect, $q);
+        if (mysqli_num_rows($r) == 1)//id found in the table
+        {
+            $row = mysqli_fetch_assoc($r);
+            $votes[0] = $row['votesUp'];
+            $votes[1] = $row['votesDown'];
+            return $votes;
+        } else {
+            echo "Something went wrong";
+        }
+    }
+}
+
 function getEffectiveVotes($id)
 	{
 	/**
@@ -42,26 +62,48 @@ $cur_votes = getAllVotes($id);
 $effectiveVote = getEffectiveVotes($id);
 
 //ok, now update the votes
-
-if($action=='vote_up') //voting up
-{
-	$votes_up = $cur_votes[0]+1;
-	$effectiveVote = getEffectiveVotes($id) + 1;
-	$q = "UPDATE post SET votesUp = $votes_up, numberOfVotes = $effectiveVote WHERE postID = $id";
-}
-elseif($action=='vote_down') //voting down
-{
-	$votes_down = $cur_votes[1]+1;
-	$effectiveVote = getEffectiveVotes($id) - 1;
-	if($effectiveVote<=-5)
-	{
-		$q="DELETE FROM post WHERE postID = $id";
-		header('Refresh: 0;');
-	}
-	else
-	{
-		$q = "UPDATE post SET votesDown = $votes_down, numberOfVotes = $effectiveVote WHERE postID = $id";
-	}
+if(isset($_GET['post'])){
+    if($action=='vote_up') //voting up
+    {
+        $votes_up = $cur_votes[0]+1;
+        $effectiveVote = getEffectiveVotes($id) + 1;
+        $q = "UPDATE post SET votesUp = $votes_up, numberOfVotes = $effectiveVote WHERE postID = $id";
+    }
+    elseif($action=='vote_down') //voting down
+    {
+        $votes_down = $cur_votes[1]+1;
+        $effectiveVote = getEffectiveVotes($id) - 1;
+        if($effectiveVote<=-5)
+        {
+            $q="DELETE FROM post WHERE postID = $id";
+            header('Refresh: 0;');
+        }
+        else
+        {
+            $q = "UPDATE post SET votesDown = $votes_down, numberOfVotes = $effectiveVote WHERE postID = $id";
+        }
+    }
+}elseif(isset($_GET['comment'])){
+    if($action=='vote_up') //voting up
+    {
+        $votes_up = $cur_votes[0]+1;
+        $effectiveVote = getEffectiveVotes($id) + 1;
+        $q = "UPDATE comments SET votesUp = $votes_up, numberOfVotes = $effectiveVote WHERE commentID = $id";
+    }
+    elseif($action=='vote_down') //voting down
+    {
+        $votes_down = $cur_votes[1]+1;
+        $effectiveVote = getEffectiveVotes($id) - 1;
+        if($effectiveVote<=-5)
+        {
+            $q="DELETE FROM comments WHERE postID = $id";
+            header('Refresh: 0;');
+        }
+        else
+        {
+            $q = "UPDATE comments SET votesDown = $votes_down, numberOfVotes = $effectiveVote WHERE commentID = $id";
+        }
+    }
 }
 
 $r = mysqli_query($connect, $q);

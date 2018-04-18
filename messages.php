@@ -52,10 +52,12 @@ if(mysqli_num_rows($res)>0) {
         array_push($conversationArray,$values);
    }
 }
-$checkAnyMessages = "SELECT * FROM conversations WHERE userID='".$_SESSION['userID']."' OR user2id='".$_SESSION['userID']."'";
-$res = mysqli_query($connect,$checkAnyMessages);
-if(mysqli_num_rows($res)==0){
-    echo "No messages yet";
+if(!isset($_GET['user'])) {
+    $checkAnyMessages = "SELECT * FROM conversations WHERE userID='" . $_SESSION['userID'] . "' OR user2id='" . $_SESSION['userID'] . "'";
+    $res = mysqli_query($connect, $checkAnyMessages);
+    if (mysqli_num_rows($res) == 0) {
+        echo "No messages yet";
+    }
 }
 echo "<table style='width:15%;float:left'>";
 $theConversations = array();

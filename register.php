@@ -20,8 +20,20 @@ if($connect)
         $_SESSION['username'] = $testUserName;
 
         if (mysqli_query($connect, $sql)) {
-            echo "We created your account to login click here!!";
-            echo "<a href='index.php' >Login</a>";
+            $addPref = "INSERT INTO preferences(username) VALUES('".$testUserName."')";
+            $res = mysqli_query($connect,$addPref);
+            if($res){
+                echo "We created your account to login click here";
+                echo "<form action='connect.php' method='post'>
+<input type='text' hidden value='".$testUserName."' name='username'>
+<input type='text' hidden value='".$testPassword."' name='password'>
+<button type='submit' class='btn' name='submit'>Login</button>
+</form>";
+            }else{
+                echo "register failed";
+                echo mysqli_error($connect);
+            }
+
         } else {
             echo "Sorry, something went wrong! This username might already be taken, please try a different one";
             echo "<a href='registerForm.php'>Go back</a>";

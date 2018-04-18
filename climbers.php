@@ -31,6 +31,18 @@ a.vote_down {
 	background:url('images/thumb_down.png');
 }	
 </style>";
+if(isset($_GET['reportSent'])){
+    echo '<div class="row">
+                <div class="col s12">
+                    <div class="card blue lighten-4">
+                        <div class="card-content">
+                            <span class="card-title">Thank you for reporting this post</span>
+                            <p>We will look into this post as soon as we can.</p>
+                        </div>
+                    </div>
+                </div>
+           </div>';
+}
 echo "<script type='text/javascript' src='js/sendVote.js'></script>";
 $userName=$_SESSION['username'];
 echo "<title>All Climbers</title>";
@@ -59,9 +71,9 @@ echo "<style>
         .tabs .indicator {
             background-color:#000;
         } 
-.options{
-cursor:default;
-}
+    .options{
+    cursor:default;
+    }
 </style>";
 echo "<div class='col s12' id='allClimbers'>";
 $q = "SELECT * FROM users";
@@ -92,7 +104,7 @@ if(!isset($_SESSION['username'])){
     }
 }
 echo "</div>";
-echo "<div class='col 12' id='following'>";
+echo "<div class='col s12' id='following'>";
 $followArray = array();
 $mySQL = "SELECT * FROM follow WHERE follower_uName='$userName'";
 $r = mysqli_query($connect, $mySQL);
@@ -183,7 +195,7 @@ usort($followArray, function($a, $b) {
 });
 for($i=0;$i<(sizeof($followArray));$i++){
     echo "<p>";
-    echo "<a href='userProfile.php?id=".$followArray[$i][1]."'>".$followArray[$i][2]."</a> - ". $followArray[$i][3];
+    echo "<a href='userProfile.php?id=".$followArray[$i][1]."'>".$followArray[$i][2]."</a> - <a href='posts.php?postID=".$followArray[$i][0]."'>". $followArray[$i][3]."</a>";
     echo "</p>";
     echo "<span class='votes_count' id='votes_count".$followArray[$i][0]."'>".$followArray[$i][4]." votes</span>";
     echo "<span class='vote_buttons' id='vote_buttons".$followArray[$i][0]."'>
@@ -192,20 +204,56 @@ for($i=0;$i<(sizeof($followArray));$i++){
 	</span>";
     echo "<i class='material-icons options dropdown-trigger' data-activates='dropdown".$followArray[$i][0]."' data-beloworigin='true'>more_vert</i>";
     echo "<ul id='dropdown".$followArray[$i][0]."' class='dropdown-content'>
-            <li><a href='#'>Remove</a></li>
+            <li><a href='#' class='modalSelect' id='".$followArray[$i][0]."'>Report</a></li>
   </ul>";
+    echo "<form action='comment.php' method='post'>
+    <input type='text' hidden value='".$followArray[$i][0]."' name='postID'>
+    <input type='text' name='comment' class='col s6'>
+    <button type='submit'>Send</button>
+</form><br>";
 }
+echo '<div id="modal1" class="modal">
+        <div class="modal-content">
+
+        </div>
+    </div>';
+
 echo "</div>";
 echo "<script>
 $(document).ready(function(){
-   $('.options').on('click',function(){
-       console.log('clicked');
-   });
+   
    $('.dropdown-trigger').dropdown();
-
+    $('.modalSelect').on('click',function(){
+       $('.modal').modal();
+       $('.modal').modal('open');
+       $('.modal').html('<form action=\"report.php\" method=\"post\">' +
+        '<h4>Report this post</h4>' +
+         '<input type=\"text\" value=\"'+$(this).attr('id')+'\" hidden name=\"postID\">' +
+          '<p>' +
+                '<input name=\"group1\" type=\"radio\" id=\"radio1\"  value=\"offensiveLanguageBehaviour\" />' +
+                '<label for=\"radio1\">Offensive language/ behaviour</label>' +
+          '</p>' +
+          '<p>' +
+               '<input name=\"group1\" type=\"radio\" id=\"radio2\" value=\"abusiveHarrasive\" />' +
+                '<label for=\"radio2\">Abusive or harrasive</label>' +
+          '</p>' +
+          '<p>' +
+                '<input name=\"group1\" type=\"radio\" id=\"radio3\" value=\"spam\" />' +
+                '<label for=\"radio3\">It\'s spam</label>' +
+          '</p>'+
+          '<label for=\"reportFor\">Comments</label>' +
+          '<input type=\"text\" name=\"comments\">' +
+          '<button type=\"submit\" name=\"postReport\" class=\"btn\">Send Report</button>' +
+          '</form>');
+//       $('.modal').html($(this).attr('id'));
+       
+    });
+    if(window.location.search==\"?replied\"){
+         Materialize.toast('You\'ve replied to the post', 3000);
+    }
 });
 </script>";
-echo "<div class='col 12' id='followingRequests'>";
+echo "<div class='col s12' id='followingRequests'>";
 $mySQL = "SELECT * FROM follow WHERE following_uName='".$_SESSION['username']."' AND accepted='0'";
 $r = mysqli_query($connect, $mySQL);
 if(mysqli_num_rows($r)>0) {
