@@ -16,7 +16,7 @@ echo "</nav>";
 if(mysqli_num_rows($res)>0){
     echo "<ul class='collapsible'>";
     while($row = mysqli_fetch_assoc($res)){
-        echo "<li><div class='collapsible-header' style='display: block'><h5>".$row['name']." - ".$row['grade']."<a href='climb.php?id=".$row['climbID']."' class='right'><i class='material-icons' style='color:rgba(0,0,0,0.87)'>info_outline</i></a></h5></div>";
+        echo "<li><div class='collapsible-header' style='display: block'><img class='circle' style='background:50% 50% no-repeat;width:75px;height:75px' src='data:image/jpeg;base64,".base64_encode($row['image'])."'><h5>".$row['name']." - ".$row['grade']."<a href='climb.php?id=".$row['climbID']."' class='right'><i class='material-icons' style='color:rgba(0,0,0,0.87)'>info_outline</i></a></h5></div>";
         echo "<div class='collapsible-body'><h6>Climbing Types</h6><ul class='collection'>";
         if($row['isSport']==1){
             echo "<li class='collection-item'>Sport</li>";

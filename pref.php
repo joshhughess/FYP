@@ -62,13 +62,14 @@ if(isset($_POST['isFreeSolo'])){
 }else{
     $pref_isFreeSolo = "N";
 }
+$postCommentVoteCount = $_POST['postCommentVoteCount'];
 if(isset($_POST['post'])){
     //check first to see if preference is there
     $check = "SELECT * FROM preferences WHERE username='$username'";
     $res = mysqli_query($connect,$check);
     if(mysqli_num_rows($res)>0) {
         while ($row = mysqli_fetch_assoc($res)) {
-            $update = "UPDATE preferences SET postVisAll='$postVisAll', allowAllFollow='$allowAllFollow', isSport='$pref_isSport', isTrad='$pref_isTrad', isTopRope='$pref_isTopRope', isBouldering='$pref_isBouldering', isMountaineering='$pref_isMountaineering', isFreeSolo='$pref_isFreeSolo' WHERE username='$username'";
+            $update = "UPDATE preferences SET postVisAll='$postVisAll', allowAllFollow='$allowAllFollow', isSport='$pref_isSport', isTrad='$pref_isTrad', isTopRope='$pref_isTopRope', isBouldering='$pref_isBouldering', isMountaineering='$pref_isMountaineering', isFreeSolo='$pref_isFreeSolo', postCommentVoteCount='$postCommentVoteCount' WHERE username='$username'";
             if (mysqli_query($connect, $update)) {
                 // send email
                 $to = $email;

@@ -18,12 +18,11 @@ if($connect)
         date_default_timezone_set('Europe/London');
         $datePost = date('Y-m-d H:i:s');
         $timePost = date("H:i:s");
-        $username=mysqli_real_escape_string($connect,$_POST['username']);
-        $post=mysqli_real_escape_string($connect,$_POST['input']);
+        $username=$_SESSION['username'];
+        $post=mysqli_real_escape_string($connect,$_POST['post']);
         $mySQL = "INSERT INTO post(username,post,timePost,datePost) VALUES('$username','$post','$timePost','$datePost')";
         if (mysqli_query($connect, $mySQL)) {
-            echo "Success";
-            header("Location:profile.php");
+            header("Location:index.php");
         }else{
             echo "There is an error somewhere";
         }

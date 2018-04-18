@@ -107,9 +107,11 @@ if($res){
     echo "error deleting comments";
     echo mysqli_error($connect);
 }
-unset($_SESSION["username"]);
-unset($_SESSION["userID"]);
-unset($_SESSION['email']);
-unset($_SESSION['passwordKey']);
-echo 'You have logged out';
-header('Refresh: 0.5; URL = index.php');
+if($hasDeleted) {
+    unset($_SESSION["username"]);
+    unset($_SESSION["userID"]);
+    unset($_SESSION['email']);
+    unset($_SESSION['passwordKey']);
+    echo 'You have logged out';
+    header('Refresh: 0.5; URL = index.php');
+}

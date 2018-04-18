@@ -42,7 +42,7 @@ if(mysqli_num_rows($res)>0){
     $res = mysqli_query($connect, $addReport);
     if ($res) {
         echo "success";
-        header("Location:climbers.php?reportSent");
+        header("Location:posts.php?postID=".$postID."?reportSent");
     } else {
         echo mysqli_error($connect);
     }

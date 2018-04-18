@@ -21,7 +21,7 @@ if(isset($_SESSION['username'])){
                     <div class ="page-header">
                         <?php
                             $username=$_SESSION['username'];
-                            echo "<form id='post' method='post' action='enterPost.php'><input type='hidden' value='$username' name='username'><input type='text' name='input'><input type='submit' value='Post' name='post'></form>"
+                                echo "<form id='post' method='post' action='enterPost.php'><input type='hidden' value='$username' name='username'><input type='text' name='input'><input type='submit' value='Post' name='post'></form>"
                         ?>
                     </div>
                 </div>

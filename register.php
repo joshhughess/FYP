@@ -4,7 +4,6 @@ $host = "localhost";
 $userName = "root";
 $password = "password";
 $db = "myclimb";
-
 $connect = mysqli_connect($host,$userName,$password, $db);
 
 
@@ -19,17 +18,22 @@ if($connect)
         $encrypt =  password_hash($testPassword, PASSWORD_DEFAULT);
         $sql = "INSERT INTO users(firstName, lastName, emailAddress, username, password) VALUES('$firstName','$secondName','$email','$testUserName', '$encrypt')";
         $_SESSION['username'] = $testUserName;
-
         if (mysqli_query($connect, $sql)) {
             $addPref = "INSERT INTO preferences(username) VALUES('".$testUserName."')";
             $res = mysqli_query($connect,$addPref);
             if($res){
-                echo "We created your account to login click here";
-                echo "<form action='connect.php' method='post'>
-<input type='text' hidden value='".$testUserName."' name='username'>
-<input type='text' hidden value='".$encrypt."' name='password'>
-<button type='submit' class='btn' name='submit'>Login</button>
-</form>";
+                $addFollow = "INSERT INTO follow(follower_uName,following_uName,accepted) VALUES('$testUserName','$testUserName','1')";
+                $res = mysqli_query($connect,$addFollow);
+                if($res) {
+                    echo "We created your account to login click here";
+                    echo "<form action='connect.php' method='post'>
+                    <input type='text' hidden value='" . $testUserName . "' name='username'>
+                    <input type='text' hidden value='" . $testPassword . "' name='password'>
+                    <button type='submit' class='btn' name='submit'>Login</button>
+                    </form>";
+                }else{
+                    echo mysqli_error($connect);
+                }
             }else{
                 echo "register failed";
                 echo mysqli_error($connect);

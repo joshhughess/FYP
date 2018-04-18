@@ -26,46 +26,18 @@ if(isset($_GET['reportAlreadySent'])){
            </div>';
 }
 if(isset($_GET['postID'])){
-    $checkIfUserPosted = "SELECT * FROM post WHERE postID='".$_GET['postID']."' AND userID='".$_SESSION['userID']."'";
-    $res = mysqli_query($connect,$checkIfUserPosted);
-    $hasPosted = false;
-    if($res){
-        $hasPosted =true;
-    }
+
     $sql = "SELECT * FROM post WHERE postID='".$_GET['postID']."'";
     $res = mysqli_query($connect,$sql);
     if(mysqli_num_rows($res)>0){
         while($row = mysqli_fetch_assoc($res)){
-            echo "<p>".$row['post']."</p>";
-            $votes = $row['votesUp']-$row['votesDown'];
-            echo "<span class='votes_count' id='votes_count".$row['postID']."'>".$votes." votes</span>";
-            echo "<span class='vote_buttons' id='vote_buttons".$row['postID']."'>
-            <a href='javascript:;' class='vote_upPost' id='".$row['postID']."'></a>
-            <a href='javascript:;' class='vote_downPost' id='".$row['postID']."'></a>
-            </span>";
-            echo "<i class='material-icons options dropdown-trigger' data-activates='dropdown".$row['postID']."' data-beloworigin='true'>more_vert</i>";
-            echo "<ul id='dropdown".$row['postID']."' class='dropdown-content'>
-                <li><a href='#' class='modalSelect' id='".$row['postID']."'>Report</a></li>
-            </ul>";
+            showPost($row);
             echo "<h4>All comments</h4>";
             $findComments = "SELECT * FROM comments WHERE postID='".$_GET['postID']."'";
             $res = mysqli_query($connect,$findComments);
             if(mysqli_num_rows($res)>0) {
                 while ($row = mysqli_fetch_assoc($res)) {
-                    echo "<p>".$row['comment']."</p>";
-                    $votes = $row['votesUp']-$row['votesDown'];
-                    echo "<span class='votes_count' id='votes_count".$row['commentID']."'>".$votes." votes</span>";
-                    echo "<span class='vote_buttons' id='vote_buttons".$row['commentID']."'>
-                    <a href='javascript:;' class='vote_upComment' id='".$row['commentID']."'></a>
-                    <a href='javascript:;' class='vote_downComment' id='".$row['commentID']."'></a>
-                    </span>";
-                            echo "<i class='material-icons options dropdown-trigger' data-activates='dropdownComment".$row['commentID']."' data-beloworigin='true'>more_vert</i>";
-                            echo "<ul id='dropdownComment".$row['commentID']."' class='dropdown-content'>
-                        <li><a href='#' class='modalSelect' id='".$row['postID']."' commentID='".$row['commentID']."'>Report</a></li>";
-                            if($hasPosted=true){
-                                echo "<li><form method='post' action='removeComment.php'><input type='text' hidden value='".$row['commentID']."' name='commentID'><input type='text' hidden value='".$row['postID']."' name='postID'><button type='submit'>Remove</button></form></li>";
-                            }
-                    echo "</ul>";
+                    showComment($row);
                 }
             }else{
                 echo mysqli_error($connect);

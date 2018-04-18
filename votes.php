@@ -73,15 +73,15 @@ if(isset($_GET['post'])){
     {
         $votes_down = $cur_votes[1]+1;
         $effectiveVote = getEffectiveVotes($id) - 1;
-        if($effectiveVote<=-5)
-        {
-            $q="DELETE FROM post WHERE postID = $id";
-            header('Refresh: 0;');
-        }
-        else
-        {
+//        if($effectiveVote<=-5)
+//        {
+//            $q="DELETE FROM post WHERE postID = $id";
+//            header('Refresh: 0;');
+//        }
+//        else
+//        {
             $q = "UPDATE post SET votesDown = $votes_down, numberOfVotes = $effectiveVote WHERE postID = $id";
-        }
+//        }
     }
 }elseif(isset($_GET['comment'])){
     if($action=='vote_up') //voting up
@@ -94,15 +94,15 @@ if(isset($_GET['post'])){
     {
         $votes_down = $cur_votes[1]+1;
         $effectiveVote = getEffectiveVotes($id) - 1;
-        if($effectiveVote<=-5)
-        {
-            $q="DELETE FROM comments WHERE postID = $id";
-            header('Refresh: 0;');
-        }
-        else
-        {
+//        if($effectiveVote<=-5)
+//        {
+//            $q="DELETE FROM comments WHERE postID = $id";
+//            header('Refresh: 0;');
+//        }
+//        else
+//        {
             $q = "UPDATE comments SET votesDown = $votes_down, numberOfVotes = $effectiveVote WHERE commentID = $id";
-        }
+//        }
     }
 }
 

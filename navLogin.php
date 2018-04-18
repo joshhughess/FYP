@@ -15,7 +15,6 @@ echo '
       <ul id="nav-mobile" class="right hide-on-med-and-down">     
         <li><a href="climbers.php">All Climbers</a></li>
         <li><a href="climbs.php">Climbs</a></li>
-        <li><a href="post.php">Post News</a></li>
         <li><a href="messages.php">Messages</a></li>
         <li><a href="profile.php">'.$_SESSION["username"].'</a></li>
         <li>

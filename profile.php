@@ -556,6 +556,7 @@ if(mysqli_num_rows($res)>0){
         $prefIsBouldering = $row['isBouldering'];
         $prefIsMountaineering = $row['isMountaineering'];
         $prefIsFreeSolo = $row['isFreeSolo'];
+        $postCommentVoteCount = $row['postCommentVoteCount'];
     }
     echo "<form id='pref' class=\"col s6\" action='pref.php' method='post'>
         <div class=\"row\">
@@ -636,6 +637,14 @@ if(mysqli_num_rows($res)>0){
                     if($prefIsFreeSolo=='Y'){echo "checked";}
                     echo ">
                     <label for='filled-in-isFreeSolo'>Free Solo</label>
+                </p>
+            </div>
+        </div>
+        <div class=\"row\">
+            <div class=\"col s6\">
+                <p>
+                    <input required type='text' id='postCommentVoteCount' name='postCommentVoteCount' value='".$postCommentVoteCount."'\>
+                    <label for='postCommentVoteCount'>Number of votes before comment/post is not shown</label>
                 </p>
             </div>
         </div>
