@@ -9,11 +9,11 @@ if(isset($_SESSION['username'])){
 }
 if(isset($_SESSION['username'])) {
     $currentUser = $_SESSION['username'];
-
     echo "<title>Messages</title>";
     echo "<p class='checkURLconversation' style='display:none'>";
     if(isset($_GET['user'])){
-        $findFromURL ="SELECT * FROM conversations WHERE userID='".$_GET['user']."' AND user2id='".$_SESSION['userID']."' OR user2ID='".$_GET['user']."' AND userID ='".$_SESSION['userID']."'";
+        $userID=mysqli_real_escape_string($connect,$_GET['user']);
+        $findFromURL ="SELECT * FROM conversations WHERE userID='".$userID."' AND user2id='".$_SESSION['userID']."' OR user2ID='".$userID."' AND userID ='".$_SESSION['userID']."'";
         $res = mysqli_query($connect,$findFromURL);
         if(mysqli_num_rows($res)>0) {
             while ($row = mysqli_fetch_assoc($res)){
@@ -86,10 +86,10 @@ if(isset($_SESSION['username'])) {
         }
     }
     if(isset($_GET['user'])){
-        $checkConversation="SELECT * FROM conversations WHERE userID='".$_SESSION['userID']."' AND user2id='".$_GET['user']."' OR user2id='".$_SESSION['userID']."' AND userID='".$_GET['user']."'";
+        $checkConversation="SELECT * FROM conversations WHERE userID='".$_SESSION['userID']."' AND user2id='".$userID."' OR user2id='".$_SESSION['userID']."' AND userID='".$userID."'";
         $res = mysqli_query($connect,$checkConversation);
         if(mysqli_num_rows($res)==0) {
-            echo "<tr class='cRow' messageTo='" . findUsername($_GET['user']) . "' convID='N'><td>" . findUsername($_GET['user']) . "</td></tr>";
+            echo "<tr class='cRow' messageTo='" . findUsername($userID) . "' convID='N'><td>" . findUsername($userID) . "</td></tr>";
         }
     }
     echo "</table>";

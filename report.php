@@ -8,13 +8,13 @@
 include('connect.php');
 $connect = mysqli_connect($host,$userName,$password, $db);
 if(isset($_POST['postID'])){
-    $postID = $_POST['postID'];
+    $postID = mysqli_real_escape_string($connect,$_POST['postID']);
 }
 if(isset($_POST['group1'])){
-$type=$_POST['group1'];
+$type=mysqli_real_escape_string($connect,$_POST['group1']);
 }
 if(isset($_POST['comments'])){
- $comments = $_POST['comments'];
+ $comments = mysqli_real_escape_string($connect,$_POST['comments']);
 }
 if(isset($_SESSION['userID'])) {
     $userID = $_SESSION['userID'];
@@ -42,7 +42,7 @@ if(isset($_SESSION['userID'])) {
         $res = mysqli_query($connect, $addReport);
         if ($res) {
             echo "success";
-            header("Location:posts.php?postID=" . $postID . "?reportSent");
+            header("Location:posts.php?postID=" . $postID . "&reportSent");
         } else {
             echo mysqli_error($connect);
         }

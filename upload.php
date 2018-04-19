@@ -1,6 +1,7 @@
 <?php
 include('connect.php');
 $connect = mysqli_connect($host,$userName,$password, $db);
+$mysqli = new Mysqli($host,$userName,$password, $db);
 if(isset($_SESSION['username'])) {
     $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
 
@@ -30,7 +31,8 @@ if(isset($_SESSION['username'])) {
     } else {
         //Get the content of the image and then add slashes to it
         $imagetmp = addslashes(file_get_contents($_FILES['fileToUpload']['tmp_name']));
-        $insertImage = "UPDATE users SET picture='" . $imagetmp . "' WHERE userID='" . $_SESSION['userID'] . "'";
+        $userID = mysqli_real_escape_string($connect,$_SESSION['userID']);
+        $insertImage = "UPDATE users SET picture='" . $imagetmp . "' WHERE userID='" . $userID . "'";
         $res = mysqli_query($connect, $insertImage);
         if (!$res) {
             echo mysqli_error($connect);

@@ -18,12 +18,12 @@ if(isset($_SESSION['username'])) {
     $postVisAll = null;
     $allowAllFollow = null;
     if (isset($_POST['postVisAll'])) {
-        $postVisAll = $_POST['postVisAll'];
+        $postVisAll = mysqli_real_escape_string($connect,$_POST['postVisAll']);
     } else {
         $postVisAll = "N";
     }
     if (isset($_POST['allowAllFollow'])) {
-        $allowAllFollow = $_POST['allowAllFollow'];
+        $allowAllFollow = mysqli_real_escape_string($connect,$_POST['allowAllFollow']);
     } else {
         $allowAllFollow = "N";
     }
@@ -34,36 +34,36 @@ if(isset($_SESSION['username'])) {
     $pref_isBouldering = null;
     $pref_isFreeSolo = null;
     if (isset($_POST['isSport'])) {
-        $pref_isSport = $_POST['isSport'];
+        $pref_isSport = mysqli_real_escape_string($_POST['isSport']);
     } else {
         $pref_isSport = "N";
     }
     if (isset($_POST['isTrad'])) {
-        $pref_isTrad = $_POST['isTrad'];
+        $pref_isTrad = mysqli_real_escape_string($connect,$_POST['isTrad']);
     } else {
         $pref_isTrad = "N";
     }
     if (isset($_POST['isTopRope'])) {
-        $pref_isTopRope = $_POST['isTopRope'];
+        $pref_isTopRope = mysqli_real_escape_string($connect,$_POST['isTopRope']);
     } else {
         $pref_isTopRope = "N";
     }
     if (isset($_POST['isMountaineering'])) {
-        $pref_isMountaineering = $_POST['isMountaineering'];
+        $pref_isMountaineering = mysqli_real_escape_string($connect,$_POST['isMountaineering']);
     } else {
         $pref_isMountaineering = "N";
     }
     if (isset($_POST['isBouldering'])) {
-        $pref_isBouldering = $_POST['isBouldering'];
+        $pref_isBouldering = mysqli_real_escape_string($connect,$_POST['isBouldering']);
     } else {
         $pref_isBouldering = "N";
     }
     if (isset($_POST['isFreeSolo'])) {
-        $pref_isFreeSolo = $_POST['isFreeSolo'];
+        $pref_isFreeSolo = mysqli_real_escape_string($connect,$_POST['isFreeSolo']);
     } else {
         $pref_isFreeSolo = "N";
     }
-    $postCommentVoteCount = $_POST['postCommentVoteCount'];
+    $postCommentVoteCount = mysqli_real_escape_string($connect,$_POST['postCommentVoteCount']);
     if (isset($_POST['post'])) {
         //check first to see if preference is there
         $check = "SELECT * FROM preferences WHERE username='$username'";

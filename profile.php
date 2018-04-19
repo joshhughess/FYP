@@ -32,7 +32,8 @@ if(isset($_GET['key'])){
     }
 }
 if(isset($_POST['acceptClimb'])){
-    $sql = "UPDATE meetings SET accepted='1' WHERE id='".$_POST['climbMeetID']."'";
+    $climbMeetID=mysqli_real_escape_string($connect,$_POST['climbMeetID']);
+    $sql = "UPDATE meetings SET accepted='1' WHERE id='".$climbMeetID."'";
     if (!mysqli_query($connect, $sql)) {
         echo mysqli_error($connect);
     }

@@ -133,9 +133,26 @@ echo "<a class='btn dropdown-triggerCount' data-activates='dropdownCounter' data
             <li><a href='#' id='mostVotes'>Most Votes</a></li>
             <li><a href='#' id='new'>Newest</a></li>
   </ul>";
+echo "<div class='wrapper'>";
+echo "<div class='allPosts left' style='width: 65%;'>";
 for($i=0;$i<(sizeof($followArray));$i++){
     showPostOrder($followArray[$i]);
 }
+echo "</div>";
+echo "<div class='featuredClimb right' style='width:32.5%'><h4>Featured Climb</h4>";
+$findRandClimb = "SELECT * FROM climbs ORDER BY RAND() LIMIT 1";
+$res = mysqli_query($connect,$findRandClimb);
+if(mysqli_num_rows($res)>0){
+    echo "<ul class='collapsible'>";
+    while($row = mysqli_fetch_assoc($res)){
+        showClimbs($row);
+    }
+    echo "</ul>";
+}else{
+    echo mysqli_error($connect);
+}
+echo "</div>";
+echo "</div>";
 if(isset($_SESSION['username'])) {
     echo '<div id="modal1" class="modal">
         <div class="modal-content">
@@ -213,6 +230,28 @@ if(isset($_SESSION['username'])) {
                 }
             });
         });
+        if($(window).width()<=950){
+            $('.featuredClimb').removeClass('right');
+            $('.featuredClimb').css('width','100%');
+            $('.allPosts').removeClass('right');
+            $('.allPosts').css('width','100%');
+        }
+        $(window).resize(function() {
+            // This will execute whenever the window is resized
+            $(window).height(); // New height
+            $(window).width(); // New width
+            if($(window).width()<=950){
+                $('.featuredClimb').removeClass('right');
+                $('.featuredClimb').css('width','100%');
+                $('.allPosts').removeClass('right');
+                $('.allPosts').css('width','100%');
+            }else{
+                $('.featuredClimb').addClass('right');
+                $('.featuredClimb').css('width','32.5%');
+                $('.allPosts').addClass('left');
+                $('.allPosts').css('width','65%');
+            }
+        });
     })
 </script>
 <style>
@@ -243,3 +282,4 @@ if(isset($_SESSION['username'])) {
     }
 </style>
 <script type='text/javascript' src='js/sendVote.js'></script>
+

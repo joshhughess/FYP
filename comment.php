@@ -8,10 +8,10 @@
 include('connect.php');
 $connect = mysqli_connect($host,$userName,$password, $db);
 if(isset($_POST['postID'])){
-    $postID = $_POST['postID'];
+    $postID = mysqli_real_escape_string($connect,$_POST['postID']);
 }
 if(isset($_POST['comment'])){
-    $comments = $_POST['comment'];
+    $comments = mysqli_real_escape_string($connect,$_POST['comment']);
 }
 if(isset($_SESSION['userID'])){
     $userID = $_SESSION['userID'];

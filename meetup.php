@@ -8,25 +8,29 @@ include('connect.php');
         include('nav.php');
     }
     if(isset($_SESSION['username'])) {
-        $currentUser = $_SESSION['username'];
+        if(isset($_GET['user'])) {
+            $currentUser = $_SESSION['username'];
 
-        echo "<title>Meetup</title>";
-        echo "<form method='post' class='meeting' action='meet.php?user=".$_GET['user']."'>";
-        echo "<p>Select a date to book a climbing session with ".findUsername($_GET['user'])."</p>";
-        echo "<p>Date: <input type='text' class='datepicker' name='date' required></p>";
-        echo "<p>Select a start time</p>";
-        echo "<input type='text' class='timepicker startTime' name='startTime' required>";
-        echo "<p>Select a end time</p>";
-        echo "<input type='text' class='timepicker endTime' name='endTime' required>";
-        echo "<p>Name of place</p>";
-        echo "<input type='text' name='placeName' id='placeName' autocomplete='off' required>";
-        echo "<button type='button' name='meetup' id='meetup'>Meet up</button>";
-        echo "</form>";
-        echo '<div id="modal1" class="modal">
+            echo "<title>Meetup</title>";
+            echo "<form method='post' class='meeting' action='meet.php?user=" . $_GET['user'] . "'>";
+            echo "<p>Select a date to book a climbing session with " . findUsername($_GET['user']) . "</p>";
+            echo "<p>Date: <input type='text' class='datepicker' name='date' required></p>";
+            echo "<p>Select a start time</p>";
+            echo "<input type='text' class='timepicker startTime' name='startTime' required>";
+            echo "<p>Select a end time</p>";
+            echo "<input type='text' class='timepicker endTime' name='endTime' required>";
+            echo "<p>Name of place</p>";
+            echo "<input type='text' name='placeName' id='placeName' autocomplete='off' required>";
+            echo "<button type='button' name='meetup' id='meetup'>Meet up</button>";
+            echo "</form>";
+            echo '<div id="modal1" class="modal">
             <div class="modal-content">
     
             </div>
         </div>';
+        }else{
+            header("Location:index.php");
+        }
 }else{
     header("Location:index.php?notLoggedin");
 }

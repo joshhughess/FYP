@@ -6,15 +6,16 @@
  * Time: 12:48
  */
 include 'connect.php';
-
 $connect = mysqli_connect($host,$userName,$password, $db);
 if(isset($_SESSION['userID'])) {
     if (isset($_POST['postID'])) {
+        $postID = mysqli_real_escape_string($connect,$_POST['postID']);
         if (isset($_POST['commentID'])) {
-            $removeComment = "DELETE FROM comments WHERE commentID='" . $_POST['commentID'] . "' AND postID='" . $_POST['postID'] . "'";
+            $commentID = mysqli_real_escape_string($connect,$_POST['commentID']);
+            $removeComment = "DELETE FROM comments WHERE commentID='" . $commentID . "' AND postID='" . $postID . "'";
             $res = mysqli_query($connect, $removeComment);
             if ($res) {
-                header("Location:posts.php?postID=" . $_POST['postID'] . "&removedComment");
+                header("Location:posts.php?postID=" . $postID . "&removedComment");
             } else {
                 echo mysqli_error($connect);
             }

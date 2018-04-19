@@ -10,8 +10,9 @@ if(isset($_SESSION['username'])){
     header("Location:index.php?notLoggedin");
 }
 if($_POST['climbID']){
-    echo "<title>Review - ".findClimbName($_POST['climbID'])."</title>";
-    $sql = "INSERT INTO hasClimbed(climbID,userID) VALUES ('".$_POST['climbID']."','".$_SESSION['userID']."')";
+    $climbID=mysqli_real_escape_string($connect,$_POST['climbID']);
+    echo "<title>Review - ".findClimbName($climbID)."</title>";
+    $sql = "INSERT INTO hasClimbed(climbID,userID) VALUES ('".$climbID."','".$_SESSION['userID']."')";
     $res = mysqli_query($connect,$sql);
     if($res){
         echo '<div class="row">
@@ -25,7 +26,7 @@ if($_POST['climbID']){
                 </div>
            </div>';
         echo "<form method='post' action='sendReview.php'>";
-        echo "<input name='climbID' hidden type='text' value='".$_POST['climbID']."'>";
+        echo "<input name='climbID' hidden type='text' value='".$climbID."'>";
         echo "<input name='rating' class='theRating' hidden type='text'>";
         echo "<label for='reviewTitle'>Title for review</label>";
         echo "<input type='text' id='reviewTitle' name='reviewTitle'>";

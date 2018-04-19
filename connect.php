@@ -7,7 +7,6 @@ $db = "myclimb";
 
 $connect = mysqli_connect($host,$userName,$password, $db);
 
-
 if($connect)
 {
 	if(isset($_POST['submit'])) {
