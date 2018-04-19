@@ -5,10 +5,10 @@ $connect = mysqli_connect($host,$userName,$password, $db);
 include('styleLinks.php');
 if(isset($_SESSION['username'])){
     include('navLogin.php');
+    $username = $_SESSION['username'];
 }else{
-    include('nav.php');
+    header("Location:index.php?notLoggedin");
 }
-$username = $_SESSION['username'];
 if($_POST['climbID']){
     echo "<title>Review - ".findClimbName($_POST['climbID'])."</title>";
     $sql = "INSERT INTO hasClimbed(climbID,userID) VALUES ('".$_POST['climbID']."','".$_SESSION['userID']."')";

@@ -2,7 +2,6 @@
 include('connect.php');
 header('Content-Type:application/json');
 $connect = mysqli_connect($host,$userName,$password, $db);
-if(isset($_SESSION['username'])){
     if(isset($_GET['climb'])){
         $sql = "SELECT * FROM climbs";
         $res = mysqli_query($connect, $sql);
@@ -38,5 +37,5 @@ if(isset($_SESSION['username'])){
         }
         print json_encode($rows);
     }
-}
+
 ?>

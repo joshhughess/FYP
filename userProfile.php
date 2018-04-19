@@ -15,8 +15,10 @@ if(isset($_SESSION['username'])) {
 if(isset($_GET['id'])){
     echo '</nav>';
     $userID = $_GET['id'];
-    echo "<button class='right btn waves-effect waves-light'><a href='messages.php?user=".$userID."' style='color:#fff'>Message user</a></button>";
-    echo "<button class='right btn waves-effect waves-light'><a href='meetup.php?user=".$userID."' style='color:#fff'>Climb with user</a></button>";
+    if(isset($_SESSION['username'])) {
+        echo "<button class='right btn waves-effect waves-light'><a href='messages.php?user=" . $userID . "' style='color:#fff'>Message user</a></button>";
+        echo "<button class='right btn waves-effect waves-light'><a href='meetup.php?user=" . $userID . "' style='color:#fff'>Climb with user</a></button>";
+    }
     //work out average grade
     $allClimbsArray = array();
     $findAllClimbs = "SELECT * FROM hasClimbed WHERE userID='".$_GET['id']."'";
@@ -58,7 +60,7 @@ if(isset($_GET['id'])){
         }
     }
     echo '<div class="row">
-        <div class="col s12">
+        <div class="col s6">
             <ul class="tabs">
                 <li class="tab"><a class="active" href="#posts">Posts</a></li>
                 <li class="tab"><a href="#climbs">Climbs</a></li>
@@ -83,7 +85,8 @@ if(isset($_GET['id'])){
         } 
 
 </style>";
-    echo "<div class='col 12' id='posts'>";
+    echo "<div class='col s12' id='posts'>";
+    $notFollowing = false;
     $findUser="SELECT * FROM users WHERE userID='$userID'";
     $res = mysqli_query($connect,$findUser);
     if(mysqli_num_rows($res)>0) {
@@ -94,17 +97,67 @@ if(isset($_GET['id'])){
             if (mysqli_num_rows($res) > 0) {
                 while ($row = mysqli_fetch_assoc($res)) {
                     if($row['postVisAll']=="Y"){
-                        echo "anyone can view posts from ".$username;
+                        $findPosts = "SELECT * FROM post WHERE username='$username' ORDER BY postID DESC";
+                        $res = mysqli_query($connect,$findPosts);
+                        if (mysqli_num_rows($res) > 0) {
+                            while ($row = mysqli_fetch_assoc($res)) {
+                                showPost($row);
+                                $findComments = "SELECT * FROM comments WHERE postID='".$row['postID']."' ORDER BY numberOfVotes DESC";
+                                $result = mysqli_query($connect,$findComments);
+                                if(mysqli_num_rows($result)>0){
+                                    while($row2 = mysqli_fetch_assoc($result)){
+                                        showComment($row2);
+                                    }
+                                    echo "<form action='comment.php' method='post'>
+                                            <input type='text' hidden value='" . $row['postID'] . "' name='postID'>
+                                            <input type='text' name='comment' class='col s6'>
+                                            <button type='submit'>Send</button>
+                                            </form>";
+                                    echo "</div>";
+                                }else{
+                                    echo "<p>No comments on this post</p>";
+                                    echo "<form action='comment.php' method='post'>
+                                            <input type='text' hidden value='" . $row['postID'] . "' name='postID'>
+                                            <input type='text' name='comment' class='col s6'>
+                                            <button type='submit'>Send</button>
+                                            </form>";
+                                    echo "</div>";
+
+                                }
+                            }
+                        }
                     }else{
-                        $checkFollow = "SELECT * FROM follow WHERE follower_uName='$currentUser' AND following_uName='$username'";
+                        $checkFollow = "SELECT * FROM follow WHERE follower_uName='$currentUser' AND following_uName='$username' AND accepted='1'";
                         $res = mysqli_query($connect,$checkFollow);
                         if (mysqli_num_rows($res) > 0) {
                             while ($row = mysqli_fetch_assoc($res)) {
-                                $findPosts = "SELECT * FROM post WHERE username='$username'";
+                                $findPosts = "SELECT * FROM post WHERE username='$username' ORDER BY postID DESC";
                                 $res = mysqli_query($connect,$findPosts);
                                 if (mysqli_num_rows($res) > 0) {
                                     while ($row = mysqli_fetch_assoc($res)) {
-                                        echo "<p>".$row['post']."</p>";
+                                        showPost($row);
+                                        $findComments = "SELECT * FROM comments WHERE postID='".$row['postID']."' ORDER BY numberOfVotes DESC";
+                                        $result = mysqli_query($connect,$findComments);
+                                        if(mysqli_num_rows($result)>0){
+                                             while($row2 = mysqli_fetch_assoc($result)){
+                                                 showComment($row2);
+                                             }
+                                            echo "<form action='comment.php' method='post'>
+                                            <input type='text' hidden value='" . $row['postID'] . "' name='postID'>
+                                            <input type='text' name='comment' class='col s6'>
+                                            <button type='submit'>Send</button>
+                                            </form>";
+                                             echo "</div>";
+                                        }else{
+                                            echo "<p>No comments on this post</p>";
+                                            echo "<form action='comment.php' method='post'>
+                                            <input type='text' hidden value='" . $row['postID'] . "' name='postID'>
+                                            <input type='text' name='comment' class='col s6'>
+                                            <button type='submit'>Send</button>
+                                            </form>";
+                                            echo "</div>";
+
+                                        }
                                     }
                                 } else {
                                     echo "No posts available";
@@ -112,6 +165,7 @@ if(isset($_GET['id'])){
                             }
                         }else{
                             echo "You need to be following this user to view their posts.";
+                            $notFollowing = true;
                         }
                     }
                 }
@@ -131,51 +185,37 @@ if(isset($_GET['id'])){
         echo "User not found please try again. <a href='climbers.php'>Go back</a>";
     }
     echo "</div>";
-    echo "<div class='col 12' id='climbs'>";
-    $allHasClimbedArray = array();
-    $findClimbs = "SELECT * FROM hasClimbed WHERE userID='".$_GET['id']."'";
-    $res = mysqli_query($connect, $findClimbs);
-    if(mysqli_num_rows($res)>0){
-        while($row = mysqli_fetch_assoc($res)){
-            array_push($allHasClimbedArray,$row['climbID']);
-        }
-    }
-    if(sizeof($allHasClimbedArray)!=0) {
-        for ($i = 0; $i < sizeof($allHasClimbedArray); $i++) {
-            $findAllTypes = "SELECT * FROM climbs WHERE climbID='" . $allHasClimbedArray[$i] . "'";
-            $res = mysqli_query($connect, $findAllTypes);
-            if (mysqli_num_rows($res) > 0) {
-                echo "<ul class='collapsible'>";
-                while ($row = mysqli_fetch_assoc($res)) {
-                    echo "<li><div class='collapsible-header' style='display: block'><h5>" . $row['name'] . " - " . $row['grade'] . "<a href='climb.php?id=" . $row['climbID'] . "' class='right'><i class='material-icons' style='color:rgba(0,0,0,0.87)'>info_outline</i></a></h5></div>";
-                    echo "<div class='collapsible-body'><h6>Climbing Types</h6><ul class='collection'>";
-                    if ($row['isSport'] == 1) {
-                        echo "<li class='collection-item'>Sport</li>";
-                    }
-                    if ($row['isTrad'] == 1) {
-                        echo "<li class='collection-item'>Trad</li>";
-                    }
-                    if ($row['isTopRope'] == 1) {
-                        echo "<li class='collection-item'>Top Rope</li>";
-                    }
-                    if ($row['isBouldering'] == 1) {
-                        echo "<li class='collection-item'>Bouldering</li>";
-                    }
-                    if ($row['isMountaineering'] == 1) {
-                        echo "<li class='collection-item'>Mountaneering</li>";
-                    }
-                    if ($row['isFreeSolo'] == 1) {
-                        echo "<li class='collection-item'>Free Solo</li>";
-                    }
-                    echo "</ul>";
-                    echo $row['information'] . "</div>";
-                    echo "</li>";
-                }
-                echo "</ul>";
+    echo "<div class='col s12' id='climbs'>";
+    if(!$notFollowing) {
+        $allHasClimbedArray = array();
+        $findClimbs = "SELECT * FROM hasClimbed WHERE userID='" . $_GET['id'] . "'";
+        $res = mysqli_query($connect, $findClimbs);
+        if (mysqli_num_rows($res) > 0) {
+            while ($row = mysqli_fetch_assoc($res)) {
+                array_push($allHasClimbedArray, $row['climbID']);
             }
         }
+        $values = array_count_values($allHasClimbedArray);
+        arsort($values);
+        $foundValuesArray = array();
+        $foundValuesArray = array_keys($values);
+        if (sizeof($foundValuesArray) != 0) {
+            for ($i = 0; $i < sizeof($foundValuesArray); $i++) {
+                $findAllTypes = "SELECT * FROM climbs WHERE climbID='" . $allHasClimbedArray[$i] . "'";
+                $res = mysqli_query($connect, $findAllTypes);
+                if (mysqli_num_rows($res) > 0) {
+                    echo "<ul class='collapsible'>";
+                    while ($row = mysqli_fetch_assoc($res)) {
+                        showClimbs($row);
+                    }
+                    echo "</ul>";
+                }
+            }
+        } else {
+            echo "This user has currently not climbed anything!";
+        }
     }else{
-        echo "This user has currently not climbed anything!";
+        echo "You need to be following this user in order to see what they have climbed.";
     }
     echo "</div>
         </div>";
@@ -191,3 +231,67 @@ function date_compare($a, $b)
 }
 
 ?>
+<div id="modal1" class="modal">
+    <div class="modal-content">
+
+    </div>
+</div>
+<style>
+    .options{
+        cursor:default;
+    }
+    span.link a {
+        font-size:150%;
+        color: #000000;
+        text-decoration:none;
+    }
+    a.vote_upPost, a.vote_upComment, a.vote_downPost, a.vote_downComment {
+        display:inline-block;
+        background-repeat:none;
+        background-position:center;
+        height:16px;
+        width:16px;
+        margin-left:4px;
+        text-indent:-900%;
+    }
+
+    a.vote_upPost, a.vote_upComment {
+        background:url('images/thumb_up.png');
+    }
+
+    a.vote_downPost, a.vote_downComment    {
+        background:url('images/thumb_down.png');
+    }
+</style>
+<script type='text/javascript' src='js/sendVote.js'></script>
+<script>
+    $(document).ready(function(){
+        $('.modalSelect').on('click',function(){
+            $('.modal').modal();
+            $('.modal').modal('open');
+            $('.modal').html('<form action="report.php" method="post">' +
+                '<h4>Report this post</h4>' +
+                '<input type="text" value="'+$(this).attr('id')+'" hidden name="postID">' +
+                '<p>' +
+                '<input name="group1" type="radio" id="radio1"  value="offensiveLanguageBehaviour" />' +
+                '<label for="radio1">Offensive language/ behaviour</label>' +
+                '</p>' +
+                '<p>' +
+                '<input name="group1" type="radio" id="radio2" value="abusiveHarrasive" />' +
+                '<label for="radio2">Abusive or harrasive</label>' +
+                '</p>' +
+                '<p>' +
+                '<input name="group1" type="radio" id="radio3" value="spam" />' +
+                '<label for="radio3">It\'s spam</label>' +
+                '</p>'+
+                '<label for="reportFor">Comments</label>' +
+                '<input type="text" name="comments">' +
+                '<button type="submit" name="postReport" class="btn">Send Report</button>' +
+                '</form>');
+//       $('.modal').html($(this).attr('id'));
+
+        });
+        $('.dropdown-trigger').dropdown();
+
+    })
+</script>

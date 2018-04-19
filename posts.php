@@ -26,19 +26,23 @@ if(isset($_GET['reportAlreadySent'])){
            </div>';
 }
 if(isset($_GET['postID'])){
-
     $sql = "SELECT * FROM post WHERE postID='".$_GET['postID']."'";
     $res = mysqli_query($connect,$sql);
     if(mysqli_num_rows($res)>0){
         while($row = mysqli_fetch_assoc($res)){
+            echo "<title>".$row['post']."</title>";
             showPost($row);
-            echo "<h4>All comments</h4>";
-            $findComments = "SELECT * FROM comments WHERE postID='".$_GET['postID']."'";
+            $findComments = "SELECT * FROM comments WHERE postID='".$_GET['postID']."' ORDER BY numberOfVotes DESC";
             $res = mysqli_query($connect,$findComments);
             if(mysqli_num_rows($res)>0) {
                 while ($row = mysqli_fetch_assoc($res)) {
                     showComment($row);
                 }
+                echo "<form action='comment.php' method='post'>
+                                            <input type='text' hidden value='" . $_GET['postID'] . "' name='postID'>
+                                            <input type='text' name='comment' class='col s6'>
+                                            <button type='submit'>Send</button>
+                                            </form>";
             }else{
                 echo mysqli_error($connect);
             }

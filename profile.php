@@ -5,13 +5,14 @@ include('styleLinks.php');
 if(isset($_SESSION['username'])){
     include('navLogin.php');
 }else{
-    include('nav.php');
+    header("Location:index.php?notLoggedin");
 }
 echo "<title>Profile</title>";
 if(isset($_GET['key'])){
     if($_GET['key']==$_SESSION['passwordKey']) {
         if (isset($_SESSION['newPass'])) {
-            $sql = "UPDATE users SET password='" . $_SESSION['newPass'] . "' WHERE userID='" . $_SESSION['userID'] . "'";
+            $encrypt = password_hash($_SESSION['newPass'], PASSWORD_DEFAULT);
+            $sql = "UPDATE users SET password='" . $encrypt . "' WHERE userID='" . $_SESSION['userID'] . "'";
             $res = mysqli_query($connect, $sql);
             if ($res) {
                 echo "<div class=\"row\">
@@ -38,8 +39,9 @@ if(isset($_POST['acceptClimb'])){
 }
 $username = $_SESSION['username'];
 
-echo '
-      <ul class="tabs">
+echo '<div class="row">
+    <div class="col s6">
+      <ul class="tabs left">
         <li class="tab"><a class="active" href="#profile">Profile</a></li>
         <li class="tab"><a href="#posts">Posts</a></li>
         <li class="tab"><a href="#meetings">Meetings</a></li>
@@ -48,6 +50,7 @@ echo '
       </ul>
     </div>';
 echo "<style>
+
 .tabs .tab a{
             color:#000;
         } /*Black color to the text*/
@@ -747,6 +750,7 @@ if(mysqli_num_rows($res)>0){
     <form id='deactivate' action='deactivate.php' method='post'>
     <button type='submit' class='btn waves-effect red' name='deactivate' onClick='deactivate.php'>Deactivate acount</button>
 </form>
+</div>
 </div>
 <style>
     .grayscale{

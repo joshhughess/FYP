@@ -4,6 +4,7 @@ $connect = mysqli_connect($host,$userName,$password, $db);
 include('styleLinks.php');
 if(isset($_SESSION['username'])){
     include('navLogin.php');
+    $userName=$_SESSION['username'];
 }else{
     include('nav.php');
 }
@@ -14,15 +15,16 @@ echo "<style>
         text-decoration:none;
     }	
 </style>";
-$userName=$_SESSION['username'];
 echo "<title>All Climbers</title>";
 echo '<div class="row">
-        <div class="col s12">
+        <div class="col s6">
             <ul class="tabs">
-                <li class="tab"><a class="active" href="#allClimbers">All Climbers</a></li>
-        <li class="tab"><a href="#following">Following</a></li>
-        <li class="tab"><a href="#followingRequests">Following Requests</a></li>
-            </ul>
+                <li class="tab"><a class="active" href="#allClimbers">All Climbers</a></li>';
+        if(isset($_SESSION['username'])) {
+            echo '<li class="tab"><a href="#following">Following</a></li>
+        <li class="tab"><a href="#followingRequests">Following Requests</a></li>';
+        }
+echo '            </ul>
       </div>';
 echo "<style>
 .tabs .tab a{
@@ -71,52 +73,54 @@ if(!isset($_SESSION['username'])){
     }
 }
 echo "</div>";
-echo "<div class='col s12' id='following'>";
-$findSelfFollow = "SELECT * FROM follow WHERE follower_uName='".$_SESSION['username']."' AND following_uName='".$_SESSION['username']."'";
-$res = mysqli_query($connect,$findSelfFollow);
-if($res){
-    while($row = mysqli_fetch_assoc($res)){
-        $selfFollowID = $row['followID'];
-    }
-}else{
-    echo mysqli_error($connect);
-}
-$findFollowing = "SELECT * FROM follow WHERE follower_uName='".$_SESSION['username']."' AND followID!='".$selfFollowID."'";
-$res = mysqli_query($connect,$findFollowing);
-if(mysqli_num_rows($res)>0){
-    while($row = mysqli_fetch_assoc($res)){
-        if($row['following_uName']!=$_SESSION['username']){
-            $otherUser = $row['following_uName'];
+if(isset($_SESSION['username'])) {
+    echo "<div class='col s12' id='following'>";
+    $findSelfFollow = "SELECT * FROM follow WHERE follower_uName='" . $_SESSION['username'] . "' AND following_uName='" . $_SESSION['username'] . "'";
+    $res = mysqli_query($connect, $findSelfFollow);
+    if ($res) {
+        while ($row = mysqli_fetch_assoc($res)) {
+            $selfFollowID = $row['followID'];
         }
-        $findUser = "SELECT * FROM users WHERE username='".$otherUser."'";
-        $res2 = mysqli_query($connect,$findUser);
-        if(mysqli_num_rows($res2)>0){
-            while($row2 = mysqli_fetch_assoc($res2)){
-                if ($row['accepted'] == '0') {
-                    echo "<form id='unfollow' action='follow.php?action=unfollow' method='post'><a href='userProfile.php?id=".$row2['userID']."'>" . $row2['firstName'] . " " . $row2['lastName'] . "</a><input name='followingName' type='hidden' value='" . $row2['username'] . "'><input name='followerName' type='hidden' value='" . $_SESSION['username'] . "'><button name='unfollow' type='submit'>Pending</button> </form>";
-                }else {
-                    echo "<form id='unfollow' action='follow.php?action=unfollow' method='post'><a href='userProfile.php?id=".$row2['userID']."'>" . $row2['firstName'] . " " . $row2['lastName'] . "</a><input name='followingName' type='hidden' value='" . $row2['username'] . "'><input name='followerName' type='hidden' value='" . $_SESSION['username'] . "'><button name='unfollow' type='submit'>Following</button> </form>";
-                }
+    } else {
+        echo mysqli_error($connect);
+    }
+    $findFollowing = "SELECT * FROM follow WHERE follower_uName='" . $_SESSION['username'] . "' AND followID!='" . $selfFollowID . "' AND accepted='1'";
+    $res = mysqli_query($connect, $findFollowing);
+    if (mysqli_num_rows($res) > 0) {
+        while ($row = mysqli_fetch_assoc($res)) {
+            if ($row['following_uName'] != $_SESSION['username']) {
+                $otherUser = $row['following_uName'];
             }
-        }else{
-            echo "unable to find user";
+            $findUser = "SELECT * FROM users WHERE username='" . $otherUser . "'";
+            $res2 = mysqli_query($connect, $findUser);
+            if (mysqli_num_rows($res2) > 0) {
+                while ($row2 = mysqli_fetch_assoc($res2)) {
+                    if ($row['accepted'] == '0') {
+                        echo "<form id='unfollow' action='follow.php?action=unfollow' method='post'><a href='userProfile.php?id=" . $row2['userID'] . "'>" . $row2['firstName'] . " " . $row2['lastName'] . "</a><input name='followingName' type='hidden' value='" . $row2['username'] . "'><input name='followerName' type='hidden' value='" . $_SESSION['username'] . "'><button name='unfollow' type='submit'>Pending</button> </form>";
+                    } else {
+                        echo "<form id='unfollow' action='follow.php?action=unfollow' method='post'><a href='userProfile.php?id=" . $row2['userID'] . "'>" . $row2['firstName'] . " " . $row2['lastName'] . "</a><input name='followingName' type='hidden' value='" . $row2['username'] . "'><input name='followerName' type='hidden' value='" . $_SESSION['username'] . "'><button name='unfollow' type='submit'>Following</button> </form>";
+                    }
+                }
+            } else {
+                echo "unable to find user";
+            }
         }
+    } else {
+        echo "You don't seem to be following anyone at the moment. Don't be shy!";
     }
-}else{
-    echo "You don't seem to be following anyone at the moment. Don't be shy!";
-}
-echo "</div>";
-echo "<div class='col s12' id='followingRequests'>";
-$mySQL = "SELECT * FROM follow WHERE following_uName='".$_SESSION['username']."' AND accepted='0'";
-$r = mysqli_query($connect, $mySQL);
-if(mysqli_num_rows($r)>0) {
-    while ($row = mysqli_fetch_assoc($r)) {
-        echo $row['follower_uName']." has requested to follow you. Do you wish to accept? <form method='post' action='followResponse.php?action=yes' id='acceptYes'><input type='hidden' value='".$row['follower_uName']."' name='follower_uName'><input type='submit' value='Yes'></form><form id='acceptNo' method='post' action='followResponse.php?action=no'><input type='hidden' value='".$row['follower_uName']."' name='follower_uName'><input type='submit' value='No'></form>";
+    echo "</div>";
+    echo "<div class='col s12' id='followingRequests'>";
+    $mySQL = "SELECT * FROM follow WHERE following_uName='" . $_SESSION['username'] . "' AND accepted='0'";
+    $r = mysqli_query($connect, $mySQL);
+    if (mysqli_num_rows($r) > 0) {
+        while ($row = mysqli_fetch_assoc($r)) {
+            echo $row['follower_uName'] . " has requested to follow you. Do you wish to accept? <form method='post' action='followResponse.php?action=yes' id='acceptYes'><input type='hidden' value='" . $row['follower_uName'] . "' name='follower_uName'><input type='submit' value='Yes'></form><form id='acceptNo' method='post' action='followResponse.php?action=no'><input type='hidden' value='" . $row['follower_uName'] . "' name='follower_uName'><input type='submit' value='No'></form>";
+        }
+    } else {
+        echo mysqli_error($connect);
     }
-}else{
-    echo mysqli_error($connect);
+    echo "</div>";
 }
-echo "</div>";
 function getTime($lastActiveTime){
     date_default_timezone_set('Europe/London');
     $dateTime = date("Y-m-d h:i:s");

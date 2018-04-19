@@ -5,7 +5,7 @@ include('styleLinks.php');
 if(isset($_SESSION['username'])) {
     $currentUser = $_SESSION['username'];
 }else{
-    $currentUser="";
+    header("Location:index.php?notLoggedin");
 }
 date_default_timezone_set('Europe/London');
 $dateTime = date("Y-m-d H:i:s");

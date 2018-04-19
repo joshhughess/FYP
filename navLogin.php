@@ -8,7 +8,7 @@
 ob_start();
 echo '
 
-  <nav class="nav-extended green darken-2">
+  <nav class="nav green darken-2">
     <div class="nav-wrapper">
       <a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons">menu</i></a>
       <a href="index.php" class="brand-logo"><img style="max-height: 64px;" src="images/logo_burned.png"></a>
@@ -64,9 +64,6 @@ echo '
     }
     .checkBox{
         opacity: 100 !important;
-    }
-    .autocomplete-content{
-        z-index:2000;
     }
 </style>
 <script>

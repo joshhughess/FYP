@@ -10,5 +10,7 @@ if(isset($_SESSION['username'])){
         $rows[] = $r;
     }
     print json_encode($rows);
+}else{
+    header("Location:index.php?notLoggedin");
 }
 ?>

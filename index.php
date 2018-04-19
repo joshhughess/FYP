@@ -20,84 +20,101 @@ if(isset($_GET['reportSent'])){
                     </div>
                 </div>
            </div>';
+}elseif(isset($_GET['notLoggedin'])){
+    echo '<div class="row">
+                <div class="col s12">
+                    <div class="card blue lighten-4">
+                        <div class="card-content">
+                            <span class="card-title">You need to be logged in to access this page</span>
+                            <p>You can register <a href="registerForm.php">here</a>.</p>
+                        </div>
+                    </div>
+                </div>
+           </div>';
 }
+
+
 $followArray = array();
+$postVisArray = array();
+$findUser="SELECT * FROM users";
+$res = mysqli_query($connect,$findUser);
+if(mysqli_num_rows($res)>0) {
+    while ($row = mysqli_fetch_assoc($res)) {
+        $username = $row['username'];
+        $checkPref = "SELECT * FROM preferences WHERE username='$username'";
+        $res2 = mysqli_query($connect, $checkPref);
+        if (mysqli_num_rows($res2) > 0) {
+            while ($row2 = mysqli_fetch_assoc($res2)) {
+                if ($row2['postVisAll'] == "Y") {
+                    $findPosts = "SELECT * FROM post WHERE username='$username' ORDER BY postID DESC";
+                    $res3 = mysqli_query($connect, $findPosts);
+                    if (mysqli_num_rows($res3) > 0) {
+                        while ($row3 = mysqli_fetch_assoc($res3)) {
+                            $values = array();
+                            array_push($values, $row3['postID']);
+                            array_push($values, findUserID($username));
+                            array_push($values, $row3['username']);
+                            array_push($values, $row3['post']);
+                            array_push($values, ($row3['votesUp'] - $row3['votesDown']));
+                            array_push($values, $row3['datePost']);
+                            array_push($followArray, $values);
+                            array_push($postVisArray,$username);
+//                                            echo "<p><a href='userProfile.php?id=".$followID."'>".$row['username']. "</a> - ".$row['post']."</p>";
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 $mySQL = "SELECT * FROM follow WHERE follower_uName='".$userName."'";
 $r = mysqli_query($connect, $mySQL);
+$alreadyIn=false;
 if(mysqli_num_rows($r)>0): //table is non-empty
     while($row = mysqli_fetch_assoc($r)):
         $followingName = $row['following_uName'];
-        $findUser="SELECT * FROM users WHERE username='$followingName'";
-        $res = mysqli_query($connect,$findUser);
-        if(mysqli_num_rows($res)>0) {
-            while ($row = mysqli_fetch_assoc($res)) {
-                $username = $row['username'];
-                $checkPref = "SELECT * FROM preferences WHERE username='$followingName'";
-                $res = mysqli_query($connect,$checkPref);
-                if (mysqli_num_rows($res) > 0) {
-                    while ($row = mysqli_fetch_assoc($res)) {
-                        if($row['postVisAll']=="on"){
-                            echo "anyone can view posts from ".$username;
-                        }else{
-                            $checkFollow = "SELECT * FROM follow WHERE follower_uName='$userName' AND following_uName='$followingName'";
-                            $res = mysqli_query($connect,$checkFollow);
-                            if (mysqli_num_rows($res) > 0) {
-                                while ($row = mysqli_fetch_assoc($res)) {
-                                    $followID=findUserID($row['following_uName']);
-                                    $findPosts = "SELECT * FROM post WHERE username='$followingName' ORDER BY postID DESC";
-                                    $res = mysqli_query($connect,$findPosts);
-                                    if (mysqli_num_rows($res) > 0) {
-                                        while ($row = mysqli_fetch_assoc($res)) {
-                                            $values= array();
-                                            array_push($values,$row['postID']);
-                                            array_push($values,$followID);
-                                            array_push($values, $row['username']);
-                                            array_push($values,$row['post']);
-                                            array_push($values,($row['votesUp']-$row['votesDown']));
-                                            array_push($followArray,$values);
-//                                            echo "<p><a href='userProfile.php?id=".$followID."'>".$row['username']. "</a> - ".$row['post']."</p>";
-                                        }
-                                    }
-                                }
-                            }else{
-                                echo "You need to be following this user to view their posts.";
-                            }
-                        }
-                    }
-                }else {
-                    $checkFollow = "SELECT * FROM follow WHERE follower_uName='$userName' AND following_uName='$followingName'";
-                    $res = mysqli_query($connect,$checkFollow);
-                    if (mysqli_num_rows($res) > 0) {
-                        while ($row = mysqli_fetch_assoc($res)) {
-                            $followUname=$row['following_uName'];
-                            $findFollowID="SELECT * FROM users WHERE username='$followUname'";
-                            $res = mysqli_query($connect,$findFollowID);
-                            if (mysqli_num_rows($res) > 0) {
-                                while ($row = mysqli_fetch_assoc($res)) {
-                                    $followID=$row['userID'];
-                                }
-                            }
-                            $findPosts = "SELECT * FROM post WHERE username='$followingName' ORDER BY postID DESC";
-                            $res = mysqli_query($connect,$findPosts);
-                            if (mysqli_num_rows($res) > 0) {
-                                while ($row = mysqli_fetch_assoc($res)) {
-                                    //push values into array so that i can order by postID rather than by postID and userPosted
-                                    $values= array();
-                                    array_push($values,$row['postID']);
-                                    array_push($values,$followID);
-                                    array_push($values, $row['username']);
-                                    array_push($values,$row['post']);
-                                    array_push($values,($row['votesUp']-$row['votesDown']));
-                                    array_push($followArray,$values);
-                                }
-                            }
-                        }
-                    }
-
+        $checkPrefFirst = "SELECT * FROM preferences WHERE username='".$followingName."'";
+        $result = mysqli_query($connect,$checkPrefFirst);
+        if(mysqli_num_rows($result)>0){
+            while($thisRow = mysqli_fetch_assoc($result)){
+                if($thisRow['postVisAll']=="Y"){
+                    $alreadyIn=true;
                 }
             }
-        }else{
-            echo "User not found please try again. <a href='climbers.php'>Go back</a>";
+        }
+        if(!$alreadyIn) {
+            $findUser = "SELECT * FROM users WHERE username='$followingName'";
+            $res = mysqli_query($connect, $findUser);
+            if (mysqli_num_rows($res) > 0) {
+                while ($row = mysqli_fetch_assoc($res)) {
+                    $username = $row['username'];
+                    $checkFollow = "SELECT * FROM follow WHERE follower_uName='$userName' AND following_uName='$followingName' AND accepted='1'";
+                    $res = mysqli_query($connect, $checkFollow);
+                    if (mysqli_num_rows($res) > 0) {
+                        while ($row = mysqli_fetch_assoc($res)) {
+                            $followID = findUserID($row['following_uName']);
+                            $findPosts = "SELECT * FROM post WHERE username='$followingName' ORDER BY postID DESC";
+                            $res = mysqli_query($connect, $findPosts);
+                            if (mysqli_num_rows($res) > 0) {
+                                while ($row = mysqli_fetch_assoc($res)) {
+                                    $values = array();
+                                    array_push($values, $row['postID']);
+                                    array_push($values, $followID);
+                                    array_push($values, $row['username']);
+                                    array_push($values, $row['post']);
+                                    array_push($values, ($row['votesUp'] - $row['votesDown']));
+                                    array_push($values, $row['datePost']);
+                                    array_push($followArray, $values);
+//                                            echo "<p><a href='userProfile.php?id=".$followID."'>".$row['username']. "</a> - ".$row['post']."</p>";
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                echo "User not found please try again. <a href='climbers.php'>Go back</a>";
+            }
         }
     endwhile;
 endif;
@@ -119,16 +136,18 @@ echo "<a class='btn dropdown-triggerCount' data-activates='dropdownCounter' data
 for($i=0;$i<(sizeof($followArray));$i++){
     showPostOrder($followArray[$i]);
 }
-echo '<div id="modal1" class="modal">
+if(isset($_SESSION['username'])) {
+    echo '<div id="modal1" class="modal">
         <div class="modal-content">
 
         </div>
     </div>';
-echo '<div class="fixed-action-btn">
+    echo '<div class="fixed-action-btn">
     <a class="btn-floating btn-large red">
       <i class="large material-icons">mode_edit</i>
     </a>
   </div>';
+}
 ?>
 <script>
     $(document).ready(function(){

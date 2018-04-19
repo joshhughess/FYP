@@ -15,15 +15,18 @@ if(isset($_POST['comment'])){
 }
 if(isset($_SESSION['userID'])){
     $userID = $_SESSION['userID'];
-}
 
-echo $postID." - ".$comments." -> ".$userID;
+    echo $postID." - ".$comments." -> ".$userID;
 
-$addReport = "INSERT INTO comments(postID,comment,userID) VALUES('".$postID."','".$comments."','".$userID."')";
-$res = mysqli_query($connect,$addReport);
-if($res){
-    echo "success";
-    header("Location:climbers.php?replied");
+    $addReport = "INSERT INTO comments(postID,comment,userID) VALUES('".$postID."','".$comments."','".$userID."')";
+    $res = mysqli_query($connect,$addReport);
+    if($res){
+        echo "success";
+        header("Location:climbers.php?replied");
+    }else{
+        echo mysqli_error($connect);
+    }
+
 }else{
-    echo mysqli_error($connect);
+    header("Location:index.php?notLoggedin");
 }

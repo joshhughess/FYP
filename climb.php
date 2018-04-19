@@ -5,10 +5,10 @@ $connect = mysqli_connect($host,$userName,$password, $db);
 include('styleLinks.php');
 if(isset($_SESSION['username'])){
     include('navLogin.php');
+    $username = $_SESSION['username'];
 }else{
     include('nav.php');
 }
-$username = $_SESSION['username'];
 if($_GET['id']){
     if(isset($_GET['reviewSent'])) {
         if ($_GET['reviewSent'] == 1) {
@@ -29,7 +29,10 @@ if($_GET['id']){
     if(mysqli_num_rows($res)>0){
         while($row = mysqli_fetch_assoc($res)) {
             echo "<title>".$row['name']."</title>";
-                echo "<form action='review.php' method='post'><h4>" . $row['name'] . " - ".$row['grade']."<input type='text' hidden name='climbID' class='climbID' value='".$row['climbID']."'><button class='btn waves-effect waves-light right' type='submit' name='hasClimbed'>Climbed this route?</button></form></h4>";
+                echo "<form action='review.php' method='post'><h4><img class='circle' style='background:50% 50% no-repeat;width:150px;height:150px' src='data:image/jpeg;base64,".base64_encode($row['image'])."'>" . $row['name'] . " - ".$row['grade']."<input type='text' hidden name='climbID' class='climbID' value='".$row['climbID']."'>";
+                if(isset($_SESSION['username'])) {
+                    echo "<button class='btn waves-effect waves-light right' type='submit' name='hasClimbed'>Climbed this route?</button></form></h4>";
+                }
             echo "<h6>Climbing Types</h6><ul class='collection'>";
             if($row['isSport']==1){
                 echo "<li class='collection-item'>Sport</li>";
