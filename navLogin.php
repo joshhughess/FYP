@@ -65,6 +65,9 @@ echo '
     .checkBox{
         opacity: 100 !important;
     }
+    body{
+        box-sizing: border-box;
+    }
 </style>
 <script>
     $(document).ready(function(){

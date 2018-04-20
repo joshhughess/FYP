@@ -32,7 +32,7 @@ echo '
         <li><a href = "registerForm.php">Register an account</a></li>
         <li><a class="dropdown-button" data-activates="dropdown1" data-beloworigin="true">Login<i class="material-icons right">arrow_drop_down</i></a></li>
         <li>
-        <form class="right" method="post" action="searchResults.php">
+        <form class="right searchRes" style="height:64px" method="post" action="searchResults.php">
             <div class="input-field">
               <input id="search" name="search" autocomplete="off" type="search" class="autocomplete" required>
               <label class="label-icon" style="transform: translateY(4px);" for="search"><i class="material-icons">search</i></label>
@@ -61,12 +61,13 @@ echo '
   ';
 ?>
 <style>
-    .dropdown-content li{
-        cursor:default;
+    .dropdown-content li {
+        cursor: default;
     }
 </style>
 <script>
     $(document).ready(function(){
+//        $('.searchRes').css('float','right !important');
         var theNames;
         $.ajax({url:"names.php",success:function(result){
             theNames = result;
