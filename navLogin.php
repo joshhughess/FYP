@@ -7,7 +7,7 @@
  */
 ob_start();
 echo '
-
+  <div class="navLogin navbar-fixed">
   <nav class="nav green darken-2">
     <div class="nav-wrapper">
       <a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons">menu</i></a>
@@ -28,7 +28,7 @@ echo '
       </ul>
     </div>
     </nav>
-    
+    </div>
     <ul id="slide-out" class="side-nav">   
         <li>
             <div class="user-view">
@@ -71,6 +71,22 @@ echo '
 </style>
 <script>
     $(document).ready(function(){
+        var previousScrollPosition =0;
+        $(window).scroll(function (event) {
+            var scroll = $(window).scrollTop();
+            // Do something
+
+            if(scroll>previousScrollPosition){
+                //down
+                $('.navLogin').stop(true,true).removeClass("navbar-fixed",500);
+            }else{
+                //up
+                $('.navLogin').stop(true,true).addClass("navbar-fixed",500);
+            }
+
+            previousScrollPosition=scroll;
+        });
+
         var theNames;
         $.ajax({url:"names.php",success:function(result){
             theNames = result;

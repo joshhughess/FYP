@@ -22,6 +22,7 @@ echo '
     <a href="registerForm.php"><b>Click here to register</b></a>
     </li>
 </ul>
+  <div class="navLogin navbar-fixed">
   <nav class="green darken-2">
     <div class="nav-wrapper">
       <a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons">menu</i></a>
@@ -42,6 +43,7 @@ echo '
       </ul>
     </div>
   </nav>
+  </div>
   <ul id="slide-out" class="side-nav">   
         <li><a href="climbers.php">All Climbers</a></li>
         <li><div class="divider"></div></li>
@@ -68,6 +70,23 @@ echo '
 <script>
     $(document).ready(function(){
 //        $('.searchRes').css('float','right !important');
+
+        var previousScrollPosition =0;
+        $(window).scroll(function (event) {
+            var scroll = $(window).scrollTop();
+            // Do something
+
+            if(scroll>previousScrollPosition){
+                //down
+                $('.navLogin').stop(true,true).removeClass("navbar-fixed",500);
+            }else{
+                //up
+                $('.navLogin').stop(true,true).addClass("navbar-fixed",500);
+            }
+
+            previousScrollPosition=scroll;
+        });
+
         var theNames;
         $.ajax({url:"names.php",success:function(result){
             theNames = result;
