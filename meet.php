@@ -20,61 +20,76 @@ if(isset($_SESSION['username'])) {
         $checkEndDateBetween = array();
         $checkDatesOutside = array();
         if ($isAfter == 1) {
-            $sql = "SELECT * FROM meetings WHERE userID='" . $_SESSION['userID'] . "'";
+            $sql = "SELECT * FROM meetings WHERE userID='" . $_SESSION['userID'] . "' AND accepted='1'
+            OR user2id='" . $_SESSION['userID'] . "' AND accepted='1'";
             $res = mysqli_query($connect, $sql);
             if (mysqli_num_rows($res) > 0) {
                 while ($row = mysqli_fetch_assoc($res)) {
                     //check start date is between rows in DB
-                    if ($startDateChose->format('Y-m-d H:i:s') >= $row['start'] && $startDateChose->format('Y-m-d H:i:s') <= $row['end']) {
-                        array_push($checkStartDateBetween, 'true');
+                    echo $row['start']."<br>";
+                    if ($startDateChose->format('Y-m-d H:i:s') >= $row['start']
+                        && $startDateChose->format('Y-m-d H:i:s') <= $row['end']) {
+                        array_push($checkStartDateBetween, true);
                     } else {
-                        array_push($checkStartDateBetween, 'false');
+                        array_push($checkStartDateBetween, false);
                     }
                     //check end date is between rows in DB
-                    if ($endDateChose->format('Y-m-d H:i:s') >= $row['start'] && $endDateChose->format('Y-m-d H:i:s') <= $row['end']) {
-                        array_push($checkEndDateBetween, 'true');
+                    if ($endDateChose->format('Y-m-d H:i:s') >= $row['start']
+                        && $endDateChose->format('Y-m-d H:i:s') <= $row['end']) {
+                        array_push($checkEndDateBetween, true);
                     } else {
-                        array_push($checkEndDateBetween, 'false');
+                        array_push($checkEndDateBetween, false);
                     }
                     //check dates are not on either side of dates in database
-                    if ($startDateChose->format('Y-m-d H:i:s') <= $row['start'] && $endDateChose->format('Y-m-d H:i:s') >= $row['end']) {
-                        array_push($checkDatesOutside, 'true');
+                    if ($startDateChose->format('Y-m-d H:i:s') <= $row['start']
+                        && $endDateChose->format('Y-m-d H:i:s') >= $row['end']) {
+                        array_push($checkDatesOutside, true);
                     } else {
-                        array_push($checkDatesOutside, 'false');
+                        array_push($checkDatesOutside, false);
                     }
                 }
             }
-            if (count(array_unique($checkStartDateBetween)) === 1 && end($checkStartDateBetween) === 'true') {
+            if (in_array(1, $checkStartDateBetween)){
                 $allStartTaken = true;
-            } else {
+            }else{
                 $allStartTaken = false;
             }
-            if (count(array_unique($checkEndDateBetween)) === 1 && end($checkEndDateBetween) === 'true') {
+            if (in_array(1, $checkEndDateBetween)){
                 $allEndTaken = true;
-            } else {
+            }else{
                 $allEndTaken = false;
             }
-            if (count(array_unique($checkDatesOutside)) === 1 && end($checkDatesOutside) === 'true') {
+            if (in_array(1, $checkDatesOutside)){
                 $datesOutside = true;
-            } else {
+            }else{
                 $datesOutside = false;
             }
+            echo "dates outside: ".var_dump($datesOutside);
+            echo "<br>";
+            echo "end inside: ".var_dump($allEndTaken);
+            echo "<br>";
+            echo "start inside: ".var_dump($allStartTaken);
             if ($allStartTaken) {
-                echo "start date taken";
+                header("Location:meetup.php?user=".$_GET['user']."&startDateTaken");
             } else {
                 if ($allEndTaken) {
-                    echo "end date taken";
+                    header("Location:meetup.php?user=".$_GET['user']."&endDateTaken");
                 } elseif ($datesOutside) {
-                    echo "dates outside";
+                    header("Location:meetup.php?user=".$_GET['user']."&datesOutside");
                 } else {
-                    $sql = "INSERT INTO meetings(userID,user2id,start,end,title) VALUES('" . $_SESSION['userID'] . "','" . $_GET['user'] . "','" . $startDateChose->format('Y-m-d H:i:s') . "','" . $endDateChose->format('Y-m-d H:i:s') . "','" . $placeName . " - with " . findUsername($_SESSION['userID']) . "')";
+                    $sql = "INSERT INTO meetings(userID,user2id,start,end,title) 
+                      VALUES('" . $_SESSION['userID'] . "','" . $_GET['user'] . "',
+                      '" . $startDateChose->format('Y-m-d H:i:s') . "',
+                      '" . $endDateChose->format('Y-m-d H:i:s') . "',
+                      '" . $placeName . " - with " . findUsername($_SESSION['userID']) . "')";
                     $res = mysqli_query($connect, $sql);
                     if ($res) {
                         $to = findUserEmail($_GET['user']);
                         $subject = findUsername($_SESSION['userID']) . " has asked to climb with you!";
                         $message = "<html><body>";
                         $message .= "<p>" . findUsername($_SESSION['userID']) . " has asked to climb with you. Please confirm</p>";
-                        $message .= "<table border='1'><tr><td>Climber</td><td>Date</td><td>Start Time</td><td>End Time</td><td>Location</td></tr>";
+                        $message .= "<table border='1'><tr><td>Climber</td>
+                        <td>Date</td><td>Start Time</td><td>End Time</td><td>Location</td></tr>";
                         $message .= "<tr><td>" . findUsername($_SESSION['userID']) . "</td>";
                         $message .= "<td>" . $startDateChose->format('l jS F Y') . "</td>";
                         $message .= "<td>" . $startDateChose->format('G:ia') . "</td>";
@@ -90,7 +105,6 @@ if(isset($_SESSION['username'])) {
                             //                    header("Location: userProfile.php");
                         }
                         if ($true) {
-                            echo "true";
                             header("Location:profile.php");
                             exit();
                         }
@@ -98,7 +112,7 @@ if(isset($_SESSION['username'])) {
                 }
             }
         } else {
-            echo "end date before";
+            header("Location:meetup.php?user=".$_GET['user']."&endDateBefore");
         }
     }else{
         header("Location:index.php");

@@ -13,18 +13,6 @@ if(isset($_SESSION['username'])){
 }else{
     include('nav.php');
 }
-if(isset($_GET['reportAlreadySent'])){
-    echo '<div class="row">
-                <div class="col s12">
-                    <div class="card blue lighten-4">
-                        <div class="card-content">
-                            <span class="card-title">You\'ve already posted a report for this</span>
-                            <p>You can only report once.</p>
-                        </div>
-                    </div>
-                </div>
-           </div>';
-}
 if(isset($_GET['postID'])){
     $postID = mysqli_real_escape_string($connect,$_GET['postID']);
     $sql = "SELECT * FROM post WHERE postID='".$postID."'";
@@ -39,14 +27,15 @@ if(isset($_GET['postID'])){
                 while ($row = mysqli_fetch_assoc($res)) {
                     showComment($row);
                 }
-                echo "<form action='comment.php' method='post'>
-                                            <input type='text' hidden value='" . $postID . "' name='postID'>
-                                            <input type='text' name='comment' class='col s6'>
-                                            <button type='submit'>Send</button>
-                                            </form>";
-            }else{
-                echo mysqli_error($connect);
+
             }
+            echo "<form action='comment.php' class='col s12' method='post'>
+                        <div class='row'><div class=\"input-field col s12\">
+                        <input type='text' hidden value='" . $postID . "' name='postID'>
+                        <input type='text' required='required' data-length='256' maxlength='256' name='comment' >
+                        <button class='btn waves-effect waves-green green darken-2' type='submit'>Send</button>
+                        </div></div>
+                    </form>";
             echo '<div id="modal1" class="modal">
         <div class="modal-content">
 
@@ -62,6 +51,7 @@ if(isset($_GET['postID'])){
 ?>
 <script>
     $(document).ready(function(){
+        $('input#comment').characterCounter();
         $('.dropdown-trigger').dropdown();
         if(window.location.href.indexOf("removedComment")>-1){
             Materialize.toast('You\'ve removed the comment', 3000);

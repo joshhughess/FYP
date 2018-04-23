@@ -15,7 +15,7 @@ if(isset($_SESSION['userID'])) {
             $removeComment = "DELETE FROM comments WHERE commentID='" . $commentID . "' AND postID='" . $postID . "'";
             $res = mysqli_query($connect, $removeComment);
             if ($res) {
-                header("Location:posts.php?postID=" . $postID . "&removedComment");
+                header("Location:index.php?removedComment");
             } else {
                 echo mysqli_error($connect);
             }

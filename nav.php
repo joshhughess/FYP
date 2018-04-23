@@ -10,12 +10,27 @@ echo '
   <ul id="dropdown1" class="dropdown-content">
   <li><form autocomplete="off" action="connect.php" method="post" id="signInForm">
     <div class="input-field">
-        <input type="text" name="username" placeholder="username" autocomplete="off">
+        <input type="text" name="username" required="required" placeholder="Username" autocomplete="off">
     </div>
     <div class="input-field">
-        <input type="password" name="password" placeholder="password" autocomplete="off">
+        <input type="password" name="password" required="required" placeholder="Password" autocomplete="off">
     </div>
-    <button class="btn waves-effect waves-light" type="submit" name="submit" onclick="connect.php">Login
+    <button class="btn waves-effect green darken-2" type="submit" name="submit" onclick="connect.php">Login
+        <i class="material-icons right">send</i>
+    </button>
+</form>
+    <a href="registerForm.php"><b>Click here to register</b></a>
+    </li>
+</ul>
+<ul id="dropdown2" class="dropdown-content">
+  <li><form autocomplete="off" action="connect.php" method="post" id="signInForm">
+    <div class="input-field">
+        <input type="text" name="username" required="required" placeholder="Username" autocomplete="off">
+    </div>
+    <div class="input-field">
+        <input type="password" name="password" required="required" placeholder="Password" autocomplete="off">
+    </div>
+    <button class="btn waves-effect green darken-2" type="submit" name="submit" onclick="connect.php">Login
         <i class="material-icons right">send</i>
     </button>
 </form>
@@ -28,7 +43,6 @@ echo '
       <a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons">menu</i></a>
       <a href="index.php" class="brand-logo"><img style="max-height: 64px;" src="images/logo_burned.png"></a>
        <ul id="nav-mobile" class="right hide-on-med-and-down"> 
-        <li><a href="climbers.php">All Climbers</a></li>
         <li><a href="climbs.php">Climbs</a></li>
         <li><a href = "registerForm.php">Register an account</a></li>
         <li><a class="dropdown-button" data-activates="dropdown1" data-beloworigin="true">Login<i class="material-icons right">arrow_drop_down</i></a></li>
@@ -44,8 +58,8 @@ echo '
     </div>
   </nav>
   </div>
-  <ul id="slide-out" class="side-nav">   
-        <li><a href="climbers.php">All Climbers</a></li>
+  <ul id="slide-out" class="side-nav">
+  <li><a class="dropdown-button" data-activates="dropdown2" data-beloworigin="true">Login<i class="material-icons right">arrow_drop_down</i></a></li>   
         <li><div class="divider"></div></li>
         <li><a href="climbs.php">Climbs</a></li>  
         <li><div class="divider"></div></li>
@@ -60,11 +74,16 @@ echo '
         </form>  
         </li>
   </ul>
+      <div class="allContent">
   ';
 ?>
 <style>
     .dropdown-content li {
         cursor: default;
+    }
+    .allContent{
+        width:90%;
+        margin:0 auto;
     }
 </style>
 <script>

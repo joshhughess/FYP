@@ -15,10 +15,10 @@ if(isset($_SESSION['username'])) {
         if ($res) {
             header("Location:climb.php?id=" . $_POST['climbID'] . "&reviewSent=1");
         } else {
-            echo "something went wrong, please try again";
+            header("Location:climb.php?id=" . $_POST['climbID'] . "&error");
         }
     } else {
-        echo "Something went wrong";
+        header("Location:climb.php?id=" . $_POST['climbID'] . "&error");
     }
 }else{
     header("Location:index.php?notLoggedin");

@@ -19,8 +19,6 @@ if(isset($_POST['comments'])){
 if(isset($_SESSION['userID'])) {
     $userID = $_SESSION['userID'];
 
-
-    echo $postID . " - " . $type . " | " . $comments . " -> " . $userID;
     if (isset($_POST['commentID'])) {
         $commentID = $_POST['commentID'];
     }
@@ -31,9 +29,8 @@ if(isset($_SESSION['userID'])) {
     }
     $res = mysqli_query($connect, $checkIfReported);
     if (mysqli_num_rows($res) > 0) {
-        header("Location:posts.php?postID=" . $postID . "&reportAlreadySent");
+        header("Location:index.php?reportAlreadySent");
     } else {
-
         if (isset($commentID)) {
             $addReport = "INSERT INTO report(postID,commentID,isType,comments,userID) VALUES('" . $postID . "','" . $commentID . "','" . $type . "','" . $comments . "','" . $userID . "')";
         } else {
@@ -42,7 +39,7 @@ if(isset($_SESSION['userID'])) {
         $res = mysqli_query($connect, $addReport);
         if ($res) {
             echo "success";
-            header("Location:posts.php?postID=" . $postID . "&reportSent");
+            header("Location:index.php?reportSent");
         } else {
             echo mysqli_error($connect);
         }

@@ -20,7 +20,7 @@ if($_GET['action']){
         $mySQL="UPDATE follow SET accepted='1' WHERE follower_uName='$follower_uName' AND following_uName='".$_SESSION['username']."'";
         if (mysqli_query($connect, $mySQL)) {
             echo "accepted";
-            header("Location:climbers.php");
+            header("Location:index.php");
         }else{
             echo "There is an error somewhere";
         }
@@ -28,7 +28,7 @@ if($_GET['action']){
         $mySQL="UPDATE follow SET accepted='0' WHERE follower_uName='$follower_uName' AND following_uName='".$_SESSION['username']."'";
         if (mysqli_query($connect, $mySQL)) {
             echo "declined";
-            header("Location:climbers.php");
+            header("Location:index.php");
         }else{
             echo "There is an error somewhere";
         }

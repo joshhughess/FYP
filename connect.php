@@ -30,14 +30,12 @@ if($connect)
                     $_SESSION['email'] = $row['emailAddress'];
                     header('Location: index.php');
                 } else {
-                    echo 'Invalid password.';
-                    echo "Sorry this is incorrect. ";
-                    echo "<a href='index.php'>Go back and try again</a>";
+                    header('Location: index.php?incorrectLogin');
                 }
             }
 
         }else{
-            echo "Sorry that was an incorrect username. <a href='index.php'>Go back and try again</a>";
+            header('Location: index.php?incorrectLogin');
         }
     }
 mysqli_close($connect);
@@ -100,7 +98,7 @@ function showPost($row){
             </span>";
     echo "<i class='material-icons options dropdown-trigger' data-activates='dropdown".$row['postID']."' data-beloworigin='true'>more_vert</i>";
     echo "<ul id='dropdown".$row['postID']."' class='dropdown-content'>
-                <li><a href='#' class='modalSelect' id='".$row['postID']."'>Report</a></li>
+                <li><a href='#' class='modalSelect report' id='".$row['postID']."'>Report</a></li>
             </ul>";
     $format = 'Y-m-d H:i:s';
     $dateFormat = DateTime::createFromFormat($format,$row['datePost']);
@@ -132,9 +130,9 @@ function showComment($row){
                     </span>";
             echo "<i class='material-icons options dropdown-trigger' data-activates='dropdownComment" . $row['commentID'] . "' data-beloworigin='true'>more_vert</i>";
             echo "<ul id='dropdownComment" . $row['commentID'] . "' class='dropdown-content'>
-                        <li><a href='#' class='modalSelect' id='" . $row['postID'] . "' commentID='" . $row['commentID'] . "'>Report</a></li>";
+                    <li><a href='#' class='modalSelect' id='" . $row['postID'] . "' commentID='" . $row['commentID'] . "'>Report</a></li>";
             if ($hasPosted == true) {
-                echo "<li><form method='post' action='removeComment.php'><input type='text' hidden value='" . $row['commentID'] . "' name='commentID'><input type='text' hidden value='" . $row['postID'] . "' name='postID'><button type='submit'>Remove</button></form></li>";
+                echo "<li><form method='post' action='removeComment.php'><input type='text' hidden value='" . $row['commentID'] . "' name='commentID'><input type='text' hidden value='" . $row['postID'] . "' name='postID'><button class='btn waves-effect green darken-2 ' type='submit'>Remove</button></form></li>";
             }
             echo "</ul></div>";
         }
@@ -148,10 +146,7 @@ function showComment($row){
                     </span>";
         echo "<i class='material-icons options dropdown-trigger' data-activates='dropdownComment" . $row['commentID'] . "' data-beloworigin='true'>more_vert</i>";
         echo "<ul id='dropdownComment" . $row['commentID'] . "' class='dropdown-content'>
-                        <li><a href='#' class='modalSelect' id='" . $row['postID'] . "' commentID='" . $row['commentID'] . "'>Report</a></li>";
-        if ($hasPosted == true) {
-            echo "<li><form method='post' action='removeComment.php'><input type='text' hidden value='" . $row['commentID'] . "' name='commentID'><input type='text' hidden value='" . $row['postID'] . "' name='postID'><button type='submit'>Remove</button></form></li>";
-        }
+                    <li><a href='#' class='modalSelect' id='" . $row['postID'] . "' commentID='" . $row['commentID'] . "'>Report</a></li>";
         echo "</ul></div>";
     }
 }
@@ -188,11 +183,13 @@ function showPostOrder($followArray){
             } else {
                 echo "<a href='posts.php?postID=" . $followArray[0] . "'>View post</a>";
             }
-            echo "<form action='comment.php' method='post'>
-    <input type='text' hidden value='" . $followArray[0] . "' name='postID'>
-    <input type='text' name='comment' class='col s6'>
-    <button type='submit'>Send</button>
-</form></div>";
+            echo "<form action='comment.php' class='col s12' method='post'>
+                        <div class='row'><div class=\"input-field col s12\">
+                        <input type='text' hidden value='" . $followArray[0] . "' name='postID'>
+                        <input type='text' required='required' name='comment' maxlength='256' data-length='256'>
+                        <button class='btn waves-effect waves-green green darken-2' type='submit'>Send</button>
+                        </div></div>
+                    </form></div>";
         }
     }elseif($followArray[4]>-4){
         echo "<div class='grey lighten-4' style='margin-bottom:25px;padding: 35px;padding-top:0;-webkit-border-radius: 15px;-moz-border-radius: 15px;border-radius: 15px;'><p>";
@@ -238,7 +235,14 @@ function findPrefCount($username){
 
 }
 function showClimbs($row){
-    echo "<li><div class='collapsible-header' style='display: block'><h5><img class='circle' style='background:50% 50% no-repeat;width:75px;height:75px' src='data:image/jpeg;base64,".base64_encode($row['image'])."'>".$row['name']." - ".$row['grade']."<a href='climb.php?id=".$row['climbID']."' class='right'><i class='material-icons' style='color:rgba(0,0,0,0.87)'>info_outline</i></a></h5></div>";
+    echo "<li><div class='collapsible-header' style='display: block'>
+    <div class='row'><div class='col s9'>
+    <div class='row'><div class='col s4'><img class='circle' style='background:50% 50% no-repeat;width:75px;height:75px;vertical-align:middle;margin-right:12px;' src='data:image/jpeg;base64,".base64_encode($row['image'])."'></div>
+    <div class='col s8'><h5>".ucfirst($row['name'])." - ".$row['grade']."</h5></div></div>
+    
+    </div><div class='col s3'>
+    <a href='climb.php?id=".$row['climbID']."' class='right' style='color:rgba(0,0,0,0.87)'>More info <i class='material-icons' >info_outline</i></a>
+    </div></div></div>";
     echo "<div class='collapsible-body'><h6>Climbing Types</h6><ul class='collection'>";
     if($row['isSport']==1){
         echo "<li class='collection-item'>Sport</li>";

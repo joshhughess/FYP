@@ -13,11 +13,10 @@ if(isset($_SESSION['username'])) {
     $currentUser="";
 }
 if(isset($_GET['id'])){
-    echo '</nav>';
     $userID = $_GET['id'];
     if(isset($_SESSION['username'])) {
-        echo "<button class='right btn waves-effect waves-light'><a href='messages.php?user=" . $userID . "' style='color:#fff'>Message user</a></button>";
-        echo "<button class='right btn waves-effect waves-light'><a href='meetup.php?user=" . $userID . "' style='color:#fff'>Climb with user</a></button>";
+        echo "<button class='right btn waves-effect green darken-2'><a href='messages.php?user=" . $userID . "' style='color:#fff'>Message user</a></button>";
+        echo "<button class='right btn waves-effect green darken-2'><a href='meetup.php?user=" . $userID . "' style='color:#fff'>Climb with user</a></button>";
     }
     //work out average grade
     $allClimbsArray = array();
@@ -56,11 +55,10 @@ if(isset($_GET['id'])){
             }else{
                 echo "</h5>";
             }
-            echo "<p>".$row['information']."</p>";
         }
     }
     echo '<div class="row">
-        <div class="col s6">
+        <div class="col s12">
             <ul class="tabs">
                 <li class="tab"><a class="active" href="#posts">Posts</a></li>
                 <li class="tab"><a href="#climbs">Climbs</a></li>
@@ -108,22 +106,16 @@ if(isset($_GET['id'])){
                                     while($row2 = mysqli_fetch_assoc($result)){
                                         showComment($row2);
                                     }
-                                    echo "<form action='comment.php' method='post'>
-                                            <input type='text' hidden value='" . $row['postID'] . "' name='postID'>
-                                            <input type='text' name='comment' class='col s6'>
-                                            <button type='submit'>Send</button>
-                                            </form>";
-                                    echo "</div>";
-                                }else{
-                                    echo "<p>No comments on this post</p>";
-                                    echo "<form action='comment.php' method='post'>
-                                            <input type='text' hidden value='" . $row['postID'] . "' name='postID'>
-                                            <input type='text' name='comment' class='col s6'>
-                                            <button type='submit'>Send</button>
-                                            </form>";
-                                    echo "</div>";
 
                                 }
+                                echo "<form action='comment.php' method='post'>
+                                        <div class='row'><div class=\"input-field col s12\">
+                                        <input type='text' hidden value='" . $row['postID'] . "' name='postID'>
+                                        <input type='text' data-length='256' name='comment' >
+                                        <button class='btn waves-effect waves-green green darken-2' type='submit'>Send</button>
+                                        </div></div>
+                                        </form>";
+                                echo "</div>";
                             }
                         }
                     }else{
@@ -143,20 +135,13 @@ if(isset($_GET['id'])){
                                                  showComment($row2);
                                              }
                                             echo "<form action='comment.php' method='post'>
-                                            <input type='text' hidden value='" . $row['postID'] . "' name='postID'>
-                                            <input type='text' name='comment' class='col s6'>
-                                            <button type='submit'>Send</button>
-                                            </form>";
-                                             echo "</div>";
-                                        }else{
-                                            echo "<p>No comments on this post</p>";
-                                            echo "<form action='comment.php' method='post'>
-                                            <input type='text' hidden value='" . $row['postID'] . "' name='postID'>
-                                            <input type='text' name='comment' class='col s6'>
-                                            <button type='submit'>Send</button>
-                                            </form>";
+                                                    <div class='row'><div class=\"input-field col s12\">
+                                                    <input type='text' hidden value='" . $row['postID'] . "' name='postID'>
+                                                    <input type='text' data-length='256' name='comment' >
+                                                    <button class='btn waves-effect waves-green green darken-2' type='submit'>Send</button>
+                                                    </div></div>
+                                                    </form>";
                                             echo "</div>";
-
                                         }
                                     }
                                 } else {
@@ -182,7 +167,7 @@ if(isset($_GET['id'])){
             }
         }
     }else{
-        echo "User not found please try again. <a href='climbers.php'>Go back</a>";
+        echo "User not found please try again. <a href='index.php'>Go back</a>";
     }
     echo "</div>";
     echo "<div class='col s12' id='climbs'>";
@@ -201,7 +186,7 @@ if(isset($_GET['id'])){
         $foundValuesArray = array_keys($values);
         if (sizeof($foundValuesArray) != 0) {
             for ($i = 0; $i < sizeof($foundValuesArray); $i++) {
-                $findAllTypes = "SELECT * FROM climbs WHERE climbID='" . $allHasClimbedArray[$i] . "'";
+                $findAllTypes = "SELECT * FROM climbs WHERE climbID='" . $foundValuesArray[$i] . "'";
                 $res = mysqli_query($connect, $findAllTypes);
                 if (mysqli_num_rows($res) > 0) {
                     echo "<ul class='collapsible'>";

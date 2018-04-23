@@ -95,7 +95,7 @@ if(mysqli_num_rows($r)>0): //table is non-empty
                 }
             }
         }else{
-            echo "User not found please try again. <a href='climbers.php'>Go back</a>";
+            echo "User not found please try again. <a href='index.php'>Go back</a>";
         }
     endwhile;
 endif;

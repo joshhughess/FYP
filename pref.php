@@ -34,7 +34,7 @@ if(isset($_SESSION['username'])) {
     $pref_isBouldering = null;
     $pref_isFreeSolo = null;
     if (isset($_POST['isSport'])) {
-        $pref_isSport = mysqli_real_escape_string($_POST['isSport']);
+        $pref_isSport = mysqli_real_escape_string($connect, $_POST['isSport']);
     } else {
         $pref_isSport = "N";
     }
@@ -88,14 +88,6 @@ if(isset($_SESSION['username'])) {
                 } else {
                     echo "There is an error somewhere";
                 }
-            }
-        } else {
-            $insertPref = "INSERT INTO preferences(username,postVisAll,allowAllFollow,isSport,isTrad,isTopRope,isBouldering,isMountaineering,isFreeSolo) VALUES('" . $_SESSION['username'] . "','" . $postVisAll . "','" . $allowAllFollow . "','" . $pref_isSport . "','" . $pref_isTrad . "','" . $pref_isTopRope . "','" . $pref_isBouldering . "','" . $pref_isMountaineering . "','" . $pref_isFreeSolo . "')";
-            $res = mysqli_query($connect, $insertPref);
-            if ($res) {
-                header("Location:profile.php");
-            } else {
-                echo mysqli_error($connect);
             }
         }
     } elseif (isset($_POST['changePass'])) {

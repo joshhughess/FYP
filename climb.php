@@ -23,6 +23,16 @@ if($_GET['id']){
                 </div>
            </div>';
         }
+    }elseif(isset($_GET['error'])){
+        echo '<div class="row">
+                <div class="col s12">
+                    <div class="card red lighten-2">
+                        <div class="card-content">
+                            <span class="card-title">Unfortunately there was an error reviewing the climb</span>
+                        </div>
+                    </div>
+                </div>
+           </div>';
     }
     $sql = "SELECT * FROM climbs WHERE climbID='".$_GET['id']."'";
     $res = mysqli_query($connect,$sql);
@@ -31,7 +41,7 @@ if($_GET['id']){
             echo "<title>".$row['name']."</title>";
                 echo "<form action='review.php' method='post'><h4><img class='circle' style='background:50% 50% no-repeat;width:150px;height:150px' src='data:image/jpeg;base64,".base64_encode($row['image'])."'>" . $row['name'] . " - ".$row['grade']."<input type='text' hidden name='climbID' class='climbID' value='".$row['climbID']."'>";
                 if(isset($_SESSION['username'])) {
-                    echo "<button class='btn waves-effect waves-light right' type='submit' name='hasClimbed'>Climbed this route?</button></form></h4>";
+                    echo "<button class='btn waves-effect green darken-2 right' type='submit' name='hasClimbed'>I've climbed this route</button></form></h4>";
                 }
             echo "<h6>Climbing Types</h6><ul class='collection'>";
             if($row['isSport']==1){

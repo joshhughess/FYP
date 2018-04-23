@@ -11,6 +11,48 @@ include('connect.php');
         if(isset($_GET['user'])) {
             $currentUser = $_SESSION['username'];
 
+            if(isset($_GET['endDateBefore'])){
+                echo '<div class="row">
+                        <div class="col s12">
+                            <div class="card red darken-1">
+                                <div class="card-content">
+                                    <span class="card-title">Unfortunately, something went wrong, please make sure that the end time is after the start time.</span>
+                                </div>
+                            </div>
+                        </div>
+                   </div>';
+            }elseif(isset($_GET['startDateTaken'])){
+                echo '<div class="row">
+                        <div class="col s12">
+                            <div class="card red darken-1">
+                                <div class="card-content">
+                                    <span class="card-title">It appears you\'ve already got that start time taken, you can\'t overlap existing meetings</span>
+                                </div>
+                            </div>
+                        </div>
+                   </div>';
+            }elseif(isset($_GET['endDateTaken'])){
+                echo '<div class="row">
+                        <div class="col s12">
+                            <div class="card red darken-1">
+                                <div class="card-content">
+                                    <span class="card-title">It appears you\'ve already got that end time taken, you can\'t overlap existing meetings</span>
+                                </div>
+                            </div>
+                        </div>
+                   </div>';
+            }elseif(isset($_GET['datesOutside'])){
+                echo '<div class="row">
+                        <div class="col s12">
+                            <div class="card red darken-1">
+                                <div class="card-content">
+                                    <span class="card-title">Unfortunately, something went wrong, please make sure that times are not overlapping an existing meeting.</span>
+                                </div>
+                            </div>
+                        </div>
+                   </div>';
+            }
+
             echo "<title>Meetup</title>";
             echo "<form method='post' class='meeting' action='meet.php?user=" . $_GET['user'] . "'>";
             echo "<p>Select a date to book a climbing session with " . findUsername($_GET['user']) . "</p>";
@@ -21,7 +63,7 @@ include('connect.php');
             echo "<input type='text' class='timepicker endTime' name='endTime' required>";
             echo "<p>Name of place</p>";
             echo "<input type='text' name='placeName' id='placeName' autocomplete='off' required>";
-            echo "<button type='button' name='meetup' id='meetup'>Meet up</button>";
+            echo "<button type='button' name='meetup' class='btn green darken-2' id='meetup'>Meet up</button>";
             echo "</form>";
             echo '<div id="modal1" class="modal">
             <div class="modal-content">
@@ -31,9 +73,9 @@ include('connect.php');
         }else{
             header("Location:index.php");
         }
-}else{
-    header("Location:index.php?notLoggedin");
-}
+    }else{
+        header("Location:index.php?notLoggedin");
+    }
 ?>
 <script>
     $(document).ready(function(){

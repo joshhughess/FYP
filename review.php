@@ -28,10 +28,14 @@ if($_POST['climbID']){
         echo "<form method='post' action='sendReview.php'>";
         echo "<input name='climbID' hidden type='text' value='".$climbID."'>";
         echo "<input name='rating' class='theRating' hidden type='text'>";
+        echo '<div class=\'row\'><div class="input-field col s12">';
         echo "<label for='reviewTitle'>Title for review</label>";
-        echo "<input type='text' id='reviewTitle' name='reviewTitle'>";
-        echo "<label for='reviewComments'>Leave your comments about the climb below</label>";
-        echo "<input type='text' id='reviewComments' name='reviewComments'>";
+        echo "<input type='text' required='required' maxlength='100' data-length='100' id='reviewTitle' name='reviewTitle'>";
+        echo "</div></div>";
+        echo '<div class=\'row\'><div class="input-field col s12">';
+        echo "<label for='reviewComments'>Leave your comments about the climb here</label>";
+        echo "<input type='text' required='required' maxlength='250' data-length='250' id='reviewComments' name='reviewComments'>";
+        echo "</div></div>";
         echo "<p>Star Rating:</p>";
         echo "<select id='starRating'>";
         echo "  <option value='1'>1</option>";
@@ -40,7 +44,7 @@ if($_POST['climbID']){
         echo "  <option value='4'>4</option>";
         echo "  <option value='5'>5</option>";
         echo "</select>";
-        echo "<button class='btn waves-effect waves-light' type='submit' name='saveReview'> Save your review</button>";
+        echo "<button class='btn waves-effect green darken-2' type='submit' name='saveReview'>Save your review</button>";
         echo "</form>";
     }else{
         echo "something went wrong please try again";
@@ -49,6 +53,7 @@ if($_POST['climbID']){
 ?>
 <script>
     $(function() {
+        $('#reviewTitle, #reviewComments').characterCounter();
         $('#starRating').barrating({
             theme: 'fontawesome-stars',
             onSelect: function(value, text, event) {

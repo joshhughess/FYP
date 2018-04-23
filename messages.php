@@ -10,10 +10,12 @@ if(isset($_SESSION['username'])){
 if(isset($_SESSION['username'])) {
     $currentUser = $_SESSION['username'];
     echo "<title>Messages</title>";
+    echo "<h5>Your messages</h5>";
     echo "<p class='checkURLconversation' style='display:none'>";
     if(isset($_GET['user'])){
         $userID=mysqli_real_escape_string($connect,$_GET['user']);
-        $findFromURL ="SELECT * FROM conversations WHERE userID='".$userID."' AND user2id='".$_SESSION['userID']."' OR user2ID='".$userID."' AND userID ='".$_SESSION['userID']."'";
+        $findFromURL ="SELECT * FROM conversations WHERE userID='".$userID."' AND user2id='".$_SESSION['userID']."' 
+        OR user2ID='".$userID."' AND userID ='".$_SESSION['userID']."'";
         $res = mysqli_query($connect,$findFromURL);
         if(mysqli_num_rows($res)>0) {
             while ($row = mysqli_fetch_assoc($res)){
@@ -29,6 +31,18 @@ if(isset($_SESSION['username'])) {
         echo findUsername($_GET['user']);
     }
     echo "</p>";
+    if(!isset($_GET['user'])) {
+        $checkAnyMessages = "SELECT * FROM conversations WHERE userID='" . $_SESSION['userID'] . "' OR user2id='" . $_SESSION['userID'] . "'";
+        $res = mysqli_query($connect, $checkAnyMessages);
+        if (mysqli_num_rows($res) == 0) {
+            echo "No messages yet";
+            echo "<script>
+                    $('document').ready(function() {
+                      $('.replyMessage').hide();
+                    })
+                </script>";
+        }
+    }
     $conversationArray = array();
     $checkUserHasMessages = "SELECT * FROM conversations WHERE userID='".$_SESSION['userID']."'";
     $res = mysqli_query($connect,$checkUserHasMessages);
@@ -49,13 +63,6 @@ if(isset($_SESSION['username'])) {
             array_push($values,$row['userID']);
             array_push($conversationArray,$values);
        }
-    }
-    if(!isset($_GET['user'])) {
-        $checkAnyMessages = "SELECT * FROM conversations WHERE userID='" . $_SESSION['userID'] . "' OR user2id='" . $_SESSION['userID'] . "'";
-        $res = mysqli_query($connect, $checkAnyMessages);
-        if (mysqli_num_rows($res) == 0) {
-            echo "No messages yet";
-        }
     }
     echo "<table style='width:15%;float:left'>";
     $theConversations = array();
@@ -86,7 +93,8 @@ if(isset($_SESSION['username'])) {
         }
     }
     if(isset($_GET['user'])){
-        $checkConversation="SELECT * FROM conversations WHERE userID='".$_SESSION['userID']."' AND user2id='".$userID."' OR user2id='".$_SESSION['userID']."' AND userID='".$userID."'";
+        $checkConversation="SELECT * FROM conversations WHERE userID='".$_SESSION['userID']."' 
+        AND user2id='".$userID."' OR user2id='".$_SESSION['userID']."' AND userID='".$userID."'";
         $res = mysqli_query($connect,$checkConversation);
         if(mysqli_num_rows($res)==0) {
             echo "<tr class='cRow' messageTo='" . findUsername($userID) . "' convID='N'><td>" . findUsername($userID) . "</td></tr>";
@@ -96,9 +104,11 @@ if(isset($_SESSION['username'])) {
     echo "<div class='messages' style='width:85%;float:right;height: 500px;overflow: auto;'>";
     for($i=0;$i<sizeof($theConversations);$i++){
         if($_SESSION['userID']==$theConversations[$i][3]){
-            echo "<div class='message conversation".$theConversations[$i][0]." grey lighten-3' messageDiv='".$theConversations[$i][4]."' style='margin-left:5%;'>";
+            echo "<div class='message conversation".$theConversations[$i][0]." grey lighten-3'
+             messageDiv='".$theConversations[$i][4]."' style='margin-left:5%;'>";
         }else{
-            echo "<div class='message conversation".$theConversations[$i][0]." grey lighten-3' messageDiv='".$theConversations[$i][4]."' style='margin-right:5%;'>";
+            echo "<div class='message conversation".$theConversations[$i][0]." grey lighten-3'
+             messageDiv='".$theConversations[$i][4]."' style='margin-right:5%;'>";
         }
         echo "<a href='userProfile.php?id=".$theConversations[$i][3]."'<p>".findUsername($theConversations[$i][3])."</p></a>";
         echo "<p>".$theConversations[$i][1]."</p>";
@@ -112,8 +122,10 @@ if(isset($_SESSION['username'])) {
     echo "</div><div class='replyMessage' style='float: right; width: 85%;bottom: 0;'><form method='post' action='sendMessage.php'>";
     echo "<input type='text' hidden id='replyTo' name='conversationID'>";
     echo "<input type='text' hidden id='messageTo' name='messageTo'>";
-    echo "<textarea type='text' class='materialize-textarea sendMessage' autocomplete='off' name='sendMessage' data-length='256'></textarea>";
-    echo "<button class='right btn waves-effect waves-light sendForm' type='button' name='reply'><i class=\"material-icons\">send</i></button>";
+    echo "<textarea type='text' class='materialize-textarea sendMessage'
+            maxlength='256' autocomplete='off' name='sendMessage' data-length='256'></textarea>";
+    echo "<button class='right btn waves-effect green darken-2 sendForm' type='button'
+            name='reply'><i class=\"material-icons\">send</i></button>";
     echo "</div></div>";
     echo "</form></div>";
 }else{

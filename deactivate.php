@@ -115,6 +115,8 @@ if(isset($_SESSION['userID'])) {
         unset($_SESSION['passwordKey']);
         echo 'You have logged out';
         header('Refresh: 0.5; URL = index.php');
+    }else{
+        header("Location:index.php?somethingWrong");
     }
 }else{
     header("Location:index.php?notLoggedin");

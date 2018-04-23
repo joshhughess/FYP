@@ -8,6 +8,9 @@ if(isset($_SESSION['username'])){
     header("Location:index.php?notLoggedin");
 }
 echo "<title>Profile</title>";
+echo "<h5>Welcome to your profile ".$_SESSION['username']."</h5>";
+echo "<p>You will notice there are 5 sections to view here, as shown in the tabs below. Simply click on a tab to view the content within</p>";
+echo "<p>Your 'profile' section will show you all of your climbs and reviews. Your 'Posts' section will show you all of your posts. The 'meetings' tab will show you all meeting information. The 'Suggested climbs' tab will recommend you a climb! And the preferences can be changed in the 'Preferences', as well as the ability to logout, change password and deactivate your account.</p>";
 if(isset($_GET['key'])){
     if($_GET['key']==$_SESSION['passwordKey']) {
         if (isset($_SESSION['newPass'])) {
@@ -41,7 +44,7 @@ if(isset($_POST['acceptClimb'])){
 $username = $_SESSION['username'];
 
 echo '<div class="row">
-    <div class="col s6">
+    <div class="col">
       <ul class="tabs left">
         <li class="tab"><a class="active" href="#profile">Profile</a></li>
         <li class="tab"><a href="#posts">Posts</a></li>
@@ -50,8 +53,33 @@ echo '<div class="row">
         <li class="tab"><a href="#preferences">Preferences</a></li>
       </ul>
     </div>';
+echo '<script type=\'text/javascript\' src=\'js/sendVote.js\'></script>';
 echo "<style>
+span.link a {
+        font-size:150%;
+        color: #000000;
+        text-decoration:none;
+    }
+    a.vote_upPost, a.vote_downPost, a.vote_UpComment, a.vote_downComment {
+        display:inline-block;
+        background-repeat:none;
+        background-position:center;
+        height:16px;
+        width:16px;
+        margin-left:4px;
+        text-indent:-900%;
+    }
 
+    a.vote_upPost, a.vote_UpComment {
+        background:url('images/thumb_up.png');
+    }
+
+    a.vote_downPost, a.vote_downComment {
+        background:url('images/thumb_down.png');
+    }
+.options{
+        cursor:default;
+    }
 .tabs .tab a{
             color:#000;
         } /*Black color to the text*/
@@ -93,7 +121,7 @@ for($i=0;$i<sizeof($allClimbsArray);$i++){
 $values = array_count_values($allGradesArray);
 arsort($values);
 $mostPopularGrade = array_slice(array_keys($values), 0, 1, true);
-$findInformationAndPicture = "SELECT information, picture, userID FROM users WHERE userID='".$_SESSION['userID']."'";
+$findInformationAndPicture = "SELECT picture, userID FROM users WHERE userID='".$_SESSION['userID']."'";
 $res = mysqli_query($connect,$findInformationAndPicture);
 if(mysqli_num_rows($res)>0){
     while($row = mysqli_fetch_assoc($res)){
@@ -109,7 +137,6 @@ if(mysqli_num_rows($res)>0){
         }else{
             echo "</h5>";
         }
-        echo "<p>".$row['information']."</p>";
     }
 }
 
@@ -136,26 +163,31 @@ if(sizeof($foundValuesArray)!=0) {
         if (mysqli_num_rows($res) > 0) {
             echo "<ul class='collapsible'>";
             while ($row = mysqli_fetch_assoc($res)) {
-                echo "<li><div class='collapsible-header' style='display: block'><h5>" . $row['name'] . " - " . $row['grade'] . "<a href='climb.php?id=" . $row['climbID'] . "' class='right'><i class='material-icons' style='color:rgba(0,0,0,0.87)'>info_outline</i></a></h5></div>";
-                echo "<div class='collapsible-body'>";
-                echo "<h6>You've climbed this ".$values[$foundValuesArray[$i]]." time(s)</h6>";
-                echo "<h6>Climbing Types</h6><ul class='collection'>";
-                if ($row['isSport'] == 1) {
+                echo "<li><div class='collapsible-header' style='display: block'>
+    <div class='row'><div class='col s9'>
+    <div class='row'><div class='col s4'><img class='circle' style='background:50% 50% no-repeat;width:75px;height:75px;vertical-align:middle;margin-right:12px;' src='data:image/jpeg;base64,".base64_encode($row['image'])."'></div>
+    <div class='col s8'><h5>".ucfirst($row['name'])." - ".$row['grade']."</h5></div></div>
+    
+    </div><div class='col s3'>
+    <a href='climb.php?id=".$row['climbID']."' class='right' style='color:rgba(0,0,0,0.87)'>More info <i class='material-icons' >info_outline</i></a>
+    </div></div></div>";
+                echo "<div class='collapsible-body'><h6>Climbing Types</h6><ul class='collection'>";
+                if($row['isSport']==1){
                     echo "<li class='collection-item'>Sport</li>";
                 }
-                if ($row['isTrad'] == 1) {
+                if($row['isTrad']==1){
                     echo "<li class='collection-item'>Trad</li>";
                 }
-                if ($row['isTopRope'] == 1) {
+                if($row['isTopRope']==1){
                     echo "<li class='collection-item'>Top Rope</li>";
                 }
-                if ($row['isBouldering'] == 1) {
+                if($row['isBouldering']==1){
                     echo "<li class='collection-item'>Bouldering</li>";
                 }
-                if ($row['isMountaineering'] == 1) {
+                if($row['isMountaineering']==1){
                     echo "<li class='collection-item'>Mountaneering</li>";
                 }
-                if ($row['isFreeSolo'] == 1) {
+                if($row['isFreeSolo']==1){
                     echo "<li class='collection-item'>Free Solo</li>";
                 }
                 echo "</ul>";
@@ -174,6 +206,7 @@ if(sizeof($foundValuesArray)!=0) {
                 echo "</li>";
             }
             echo "</ul>";
+
         }
     }
 }else{
@@ -181,11 +214,17 @@ if(sizeof($foundValuesArray)!=0) {
 }
 echo "</div>";
 echo "<div class='col s12' id='posts'>";
+echo '<div id="modal2" class="modal">
+        <div class="modal-content">
+
+        </div>
+    </div>';
 $findUserPost="SELECT * FROM post WHERE username='$username' ORDER BY postID DESC";
 $res = mysqli_query($connect,$findUserPost);
 if(mysqli_num_rows($res)>0){
     while($row = mysqli_fetch_assoc($res)){
-        echo "<p>".$row['post']."</p>";
+        showPost($row);
+        echo "</div>";
     }
 }
 echo "</div>";
@@ -211,32 +250,33 @@ if(mysqli_num_rows($res)>0){
     echo "You've sent no requests at the moment.";
 
 }
-    $sql = "SELECT * FROM meetings WHERE user2id='" . $_SESSION['userID'] . "' AND accepted='0'";
-    $res = mysqli_query($connect,$sql);
-    echo "<h5>Your received climbing meeting requests</h5>";
-    if(mysqli_num_rows($res)>0){
-        echo "<table border='1'><tr><td>Climber</td><td>Date</td><td>Start Time</td><td>End Time</td><td>Location</td><td>Accept</td></tr>";
-        while($row = mysqli_fetch_assoc($res)){
-            echo "<tr><td>".findUsername($row['userID'])."</td>";
-            $startDate = new DateTime($row['start']);
-            $endDate = new DateTime($row['end']);
-            echo "<td>".$startDate->format('l jS F Y')."</td>";
-            echo "<td>".$startDate->format('G:ia')."</td>";
-            echo "<td>".$endDate->format('G:ia')."</td>";
-            $title = $row['title'];
-            $location = explode(" - ",$title);
-            echo "<td>".$location[0]."</td>";
-            echo "<td><form method='post'><input type='text' hidden name='climbMeetID' value='".$row['id']."'><button class='btn waves-effect waves-light' type='submit' name='acceptClimb'>Accept</button></form></td></tr>";
-        }
-        echo "</table>";
-    }else {
-       echo "No meeting requests at the moment.";
-
+$sql = "SELECT * FROM meetings WHERE user2id='" . $_SESSION['userID'] . "' AND accepted='0'";
+$res = mysqli_query($connect,$sql);
+echo "<h5>Your received climbing meeting requests</h5>";
+if(mysqli_num_rows($res)>0){
+    echo "<table border='1'><tr><td>Climber</td><td>Date</td><td>Start Time</td><td>End Time</td><td>Location</td><td>Accept</td></tr>";
+    while($row = mysqli_fetch_assoc($res)){
+        echo "<tr><td>".findUsername($row['userID'])."</td>";
+        $startDate = new DateTime($row['start']);
+        $endDate = new DateTime($row['end']);
+        echo "<td>".$startDate->format('l jS F Y')."</td>";
+        echo "<td>".$startDate->format('G:ia')."</td>";
+        echo "<td>".$endDate->format('G:ia')."</td>";
+        $title = $row['title'];
+        $location = explode(" - ",$title);
+        echo "<td>".$location[0]."</td>";
+        echo "<td><form method='post'><input type='text' hidden name='climbMeetID' value='".$row['id']."'>
+            <button class='btn waves-effect green darken-2' type='submit' name='acceptClimb'>Accept</button></form></td></tr>";
+    }
+    echo "</table>";
+}else {
+   echo "No meeting requests at the moment.";
 }
 ?>
 <h5>Your climbing meetings</h5>
 <?php
-$sql = "SELECT * FROM meetings WHERE userID='".$_SESSION['userID']."' OR user2id='".$_SESSION['userID']."' AND accepted='1' ORDER BY start ASC";
+$sql = "SELECT * FROM meetings WHERE userID='".$_SESSION['userID']."' OR user2id='".$_SESSION['userID']."' AND accepted='1'
+ ORDER BY start ASC";
 $res = mysqli_query($connect,$sql);
 if(mysqli_num_rows($res)>0){
     echo "<div id='calendar' style='width: 80%;margin:0 auto;'></div>";
@@ -250,7 +290,8 @@ echo '<div id="modal1" class="modal">
     </div>';
 echo "</div>";
 echo "<div class='col s12' id='suggestedClimbs'>";
-echo "<h6>Most popular climbs by you!</h6>";
+echo "<div class='row'><div class='col s12 l6'>";
+echo "<h5>Most popular climbs by you!</h5>";
 $sql = "SELECT climbID, COUNT(climbID) AS 'value_occurrence' FROM hasclimbed WHERE userID='".$_SESSION['userID']."' GROUP BY climbID ORDER BY value_occurrence DESC LIMIT 3";
 $res = mysqli_query($connect,$sql);
 $popularArray = array();
@@ -268,44 +309,15 @@ for($i=0;$i<sizeof($popularArray);$i++){
     if(mysqli_num_rows($res)>0){
         echo "<ul class='collapsible'>";
         while($row = mysqli_fetch_assoc($res)){
-            echo "<li><div class='collapsible-header' style='display: block'><h5>".$row['name']." - ".$row['grade']."<a href='climb.php?id=".$row['climbID']."' class='right'><i class='material-icons' style='color:rgba(0,0,0,0.87)'>info_outline</i></a></h5></div>";
-            echo "<div class='collapsible-body'>";
-            echo "<h6>You've climbed this ".$values[$popularArray[$i]]." time(s)</h6>";
-            echo "<h6>Climbing Types</h6><ul class='collection'>";
-            if($row['isSport']==1){
-                echo "<li class='collection-item'>Sport</li>";
-                array_push($climbingTypeArray,"isSport");
-            }
-            if($row['isTrad']==1){
-                echo "<li class='collection-item'>Trad</li>";
-                array_push($climbingTypeArray,"isTrad");
-            }
-            if($row['isTopRope']==1){
-                echo "<li class='collection-item'>Top Rope</li>";
-                array_push($climbingTypeArray,"isTopRope");
-            }
-            if($row['isBouldering']==1){
-                echo "<li class='collection-item'>Bouldering</li>";
-                array_push($climbingTypeArray,"isBouldering");
-            }
-            if($row['isMountaineering']==1){
-                echo "<li class='collection-item'>Mountaneering</li>";
-                array_push($climbingTypeArray,"isMountaineering");
-            }
-            if($row['isFreeSolo']==1){
-                echo "<li class='collection-item'>Free Solo</li>";
-                array_push($climbingTypeArray,"isFreeSolo");
-            }
-            echo "</ul>";
-            echo $row['information']."</div>";
-            echo "</li>";
+            showClimbs($row);
         echo "</ul>";
         }
     }else{
         echo "something wrong";
     }
 }
-echo "<h6>Suggested climbs based on your previous climb types</h6>";
+echo "</div><div class='col s12 l6'>";
+echo "<h5>Suggested climbs based on your previous climb types</h5>";
 $allHasClimbedArray = array();
 $findAllHasClimbedByUser = "SELECT * FROM hasClimbed WHERE userID='".$_SESSION['userID']."'";
 $res = mysqli_query($connect, $findAllHasClimbedByUser);
@@ -316,7 +328,6 @@ if(mysqli_num_rows($res)>0){
 }
 //var_dump($allHasClimbedArray);
 $allTypesArray = array();
-$allGradesArray = array();
 for($i=0;$i<sizeof($allHasClimbedArray);$i++){
     $findAllTypes = "SELECT * FROM climbs WHERE climbID='".$allHasClimbedArray[$i]."'";
     $res = mysqli_query($connect,$findAllTypes);
@@ -371,37 +382,9 @@ if($res){
     if(mysqli_num_rows($res)>0){
         echo "<ul class='collapsible'>";
         while($row = mysqli_fetch_assoc($res)){
-            echo "<li><div class='collapsible-header' style='display: block'><h5>".$row['name']." - ".$row['grade']."<a href='climb.php?id=".$row['climbID']."' class='right'><i class='material-icons' style='color:rgba(0,0,0,0.87)'>info_outline</i></a></h5></div>";
-            echo "<div class='collapsible-body'><h6>Climbing Types</h6><ul class='collection'>";
-            if($row['isSport']==1){
-                echo "<li class='collection-item'>Sport</li>";
-                array_push($climbingTypeArray,"isSport");
-            }
-            if($row['isTrad']==1){
-                echo "<li class='collection-item'>Trad</li>";
-                array_push($climbingTypeArray,"isTrad");
-            }
-            if($row['isTopRope']==1){
-                echo "<li class='collection-item'>Top Rope</li>";
-                array_push($climbingTypeArray,"isTopRope");
-            }
-            if($row['isBouldering']==1){
-                echo "<li class='collection-item'>Bouldering</li>";
-                array_push($climbingTypeArray,"isBouldering");
-            }
-            if($row['isMountaineering']==1){
-                echo "<li class='collection-item'>Mountaneering</li>";
-                array_push($climbingTypeArray,"isMountaineering");
-            }
-            if($row['isFreeSolo']==1){
-                echo "<li class='collection-item'>Free Solo</li>";
-                array_push($climbingTypeArray,"isFreeSolo");
-            }
-            echo "</ul>";
-            echo $row['information']."</div>";
-            echo "</li>";
-            echo "</ul>";
+            showClimbs($row);
         }
+        echo "</ul>";
     }else{
         echo "It doesn't appear you've climbed enough yet, we need at least 1 to choose from.";
     }
@@ -409,8 +392,8 @@ if($res){
     echo "It doesn't appear you've climbed enough yet, we need at least 1 to choose from.";
 
 }
-
-echo "<h6>Suggested climbs based on your preferences</h6>";
+echo "</div><div class='col s12 l6'>";
+echo "<h5>Suggested climbs based on your preferences</h5>";
 $preferenceArray = array();
 $findPreferences = "SELECT * FROM preferences WHERE username='".$_SESSION['username']."'";
 $res = mysqli_query($connect,$findPreferences);
@@ -453,46 +436,29 @@ if($res) {
     if (mysqli_num_rows($res) > 0) {
         echo "<ul class='collapsible'>";
         while ($row = mysqli_fetch_assoc($res)) {
-            echo "<li><div class='collapsible-header' style='display: block'><h5>" . $row['name'] . " - " . $row['grade'] . "<a href='climb.php?id=" . $row['climbID'] . "' class='right'><i class='material-icons' style='color:rgba(0,0,0,0.87)'>info_outline</i></a></h5></div>";
-            echo "<div class='collapsible-body'><h6>Climbing Types</h6><ul class='collection'>";
-            if ($row['isSport'] == 1) {
-                echo "<li class='collection-item'>Sport</li>";
-            }
-            if ($row['isTrad'] == 1) {
-                echo "<li class='collection-item'>Trad</li>";
-            }
-            if ($row['isTopRope'] == 1) {
-                echo "<li class='collection-item'>Top Rope</li>";
-            }
-            if ($row['isBouldering'] == 1) {
-                echo "<li class='collection-item'>Bouldering</li>";
-            }
-            if ($row['isMountaineering'] == 1) {
-                echo "<li class='collection-item'>Mountaneering</li>";
-            }
-            if ($row['isFreeSolo'] == 1) {
-                echo "<li class='collection-item'>Free Solo</li>";
-            }
-            echo "</ul>";
-            echo $row['information'] . "</div>";
-            echo "</li>";
-            echo "</ul>";
+            showClimbs($row);
+
         }
+        echo "</ul>";
     }
 }else{
     echo "It doesn't appear you've got any preferences yet.";
 }
-echo "<h6>Suggested climbs based on previous grades</h6>";
+echo "</div><div class='col s12 l6'>";
+echo "<h5>Suggested climbs based on previous grades</h5>";
 $gradeValues = array_count_values($allGradesArray);
 arsort($gradeValues);
+
 $theGradesClimbed = array();
 $theGradesClimbed = array_keys($gradeValues);
+
 $theGradeNumbers = array();
 for($i=0;$i<sizeof($theGradesClimbed);$i++){
     array_push($theGradeNumbers, preg_replace("/[^0-9,.]/", "", $theGradesClimbed[$i]));
 }
 $gradeNumberGroup = array_count_values($theGradeNumbers);
 arsort($gradeNumberGroup);
+
 $theGradeNumberValues = array();
 $theGradeNumberValues = array_keys($gradeNumberGroup);
 $findSuggestedBasedOnPrevGrades = "SELECT * FROM climbs WHERE";
@@ -512,41 +478,19 @@ if($res) {
     if (mysqli_num_rows($res) > 0) {
         echo "<ul class='collapsible'>";
         while ($row = mysqli_fetch_assoc($res)) {
-            echo "<li><div class='collapsible-header' style='display: block'><h5>" . $row['name'] . " - " . $row['grade'] . "<a href='climb.php?id=" . $row['climbID'] . "' class='right'><i class='material-icons' style='color:rgba(0,0,0,0.87)'>info_outline</i></a></h5></div>";
-            echo "<div class='collapsible-body'><h6>Climbing Types</h6><ul class='collection'>";
-            if ($row['isSport'] == 1) {
-                echo "<li class='collection-item'>Sport</li>";
-            }
-            if ($row['isTrad'] == 1) {
-                echo "<li class='collection-item'>Trad</li>";
-            }
-            if ($row['isTopRope'] == 1) {
-                echo "<li class='collection-item'>Top Rope</li>";
-            }
-            if ($row['isBouldering'] == 1) {
-                echo "<li class='collection-item'>Bouldering</li>";
-            }
-            if ($row['isMountaineering'] == 1) {
-                echo "<li class='collection-item'>Mountaneering</li>";
-            }
-            if ($row['isFreeSolo'] == 1) {
-                echo "<li class='collection-item'>Free Solo</li>";
-            }
-            echo "</ul>";
-            echo $row['information'] . "</div>";
-            echo "</li>";
-            echo "</ul>";
+            showClimbs($row);
         }
+        echo "</ul>";
+
     }else{
         echo "It doesn't appear that there are currently any other grades similar to this yet.";
     }
 }else{
     echo "It doesn't appear you've climbed enough yet, we need at least 1 to choose from";
 }
-echo "</div>";
+echo "</div></div></div>";
 echo "<div class='col s12' id='preferences'>";
 echo "<h5>Update your preferences here:</h5>";
-
 $searchPref = "SELECT * FROM preferences WHERE username='".findUsername($_SESSION['userID'])."'";
 $res = mysqli_query($connect,$searchPref);
 if(mysqli_num_rows($res)>0){
@@ -583,7 +527,15 @@ if(mysqli_num_rows($res)>0){
                 </p>
             </div>
         </div>
-        <h6>Climbing types</h6>
+        <div class=\"row\">
+            <div class=\"col s6\">
+                <p>
+                    <input required type='text' id='postCommentVoteCount' name='postCommentVoteCount' value='".$postCommentVoteCount."'\>
+                    <label for='postCommentVoteCount'>Number of votes before comment/post is not shown</label>
+                </p>
+            </div>
+        </div>
+        <h6>Preferred Climbing types</h6>
         <div class=\"row\">
             <div class=\"col s6\">
                 <p>
@@ -645,93 +597,13 @@ if(mysqli_num_rows($res)>0){
             </div>
         </div>
         <div class=\"row\">
-            <div class=\"col s6\">
-                <p>
-                    <input required type='text' id='postCommentVoteCount' name='postCommentVoteCount' value='".$postCommentVoteCount."'\>
-                    <label for='postCommentVoteCount'>Number of votes before comment/post is not shown</label>
-                </p>
-            </div>
-        </div>
-        <div class=\"row\">
             <div class=\"input-field col s6\">
-                <button class=\"btn waves-effect waves-light\" type=\"submit\" name=\"post\">Update</button>
+                <button class=\"btn waves-effect green darken-2\" type=\"submit\" name=\"post\">Update Preferences</button>
             </div>
         </div>
     </form>";
 }else{
-    //show preferences
-    echo "<form id='pref' class=\"col s6\" action='pref.php' method='post'>
-        <div class=\"row\">
-            <div class=\"col s6\">
-                <p>
-                    <input type='checkbox' id='filled-in-box' class=\"filled-in\" name='postVisAll'>
-                    <label for=\"filled-in-box\">Allow people who aren't following me to view my posts?</label>
-                </p>
-            </div>
-        </div>
-        <div class=\"row\">
-            <div class=\"col s6\">
-                <p>
-                    <input type='checkbox' class='filled-in' id='filled-in-box1' name='allowAllFollow' value='Y'>
-                    <label for='filled-in-box1'>Allow anyone to follow me?</label>
-                </p>
-            </div>
-        </div>
-        <h6>Climbing types</h6>
-        <div class=\"row\">
-            <div class=\"col s6\">
-                <p>
-                    <input type='checkbox' class='filled-in' id='filled-in-isSport' name='isSport' value='Y'>
-                    <label for='filled-in-isSport'>Sport</label>
-                </p>
-            </div>
-        </div>
-        <div class=\"row\">
-            <div class=\"col s6\">
-                <p>
-                    <input type='checkbox' class='filled-in' id='filled-in-isTrad' name='isTrad' value='Y'>
-                    <label for='filled-in-isTrad'>Trad</label>
-                </p>
-            </div>
-        </div>
-        <div class=\"row\">
-            <div class=\"col s6\">
-                <p>
-                    <input type='checkbox' class='filled-in' id='filled-in-isBouldering' name='isBouldering' value='Y'>
-                    <label for='filled-in-isBouldering'>Bouldering</label>
-                </p>
-            </div>
-        </div>
-        <div class=\"row\">
-            <div class=\"col s6\">
-                <p>
-                    <input type='checkbox' class='filled-in' id='filled-in-isTopRope' name='isTopRope' value='Y'>
-                    <label for='filled-in-isTopRope'>Top Rope</label>
-                </p>
-            </div>
-        </div>
-        <div class=\"row\">
-            <div class=\"col s6\">
-                <p>
-                    <input type='checkbox' class='filled-in' id='filled-in-isMountaineering' name='isMountaineering' value='Y'>
-                    <label for='filled-in-isMountaineering'>Mountaineering</label>
-                </p>
-            </div>
-        </div>
-        <div class=\"row\">
-            <div class=\"col s6\">
-                <p>
-                    <input type='checkbox' class='filled-in' id='filled-in-isFreeSolo' name='isFreeSolo' value='Y'>
-                    <label for='filled-in-isFreeSolo'>Free Solo</label>
-                </p>
-            </div>
-        </div>
-        <div class=\"row\">
-            <div class=\"input-field col s6\">
-                <button class=\"btn waves-effect waves-light\" type=\"submit\" name=\"post\">Update</button>
-            </div>
-        </div>
-    </form>";
+    echo "Something seems out of order, you don't seem to have any preference settings, please contact the website developers.";
 }
 ?>
     <br>
@@ -740,17 +612,25 @@ if(mysqli_num_rows($res)>0){
             <div class="input-field col s6">
                 <input placeholder="New Password" id="passwordInput" type='text' name='password'>
                 <label for="passwordInput">Change Password?</label>
-                <button type='submit' class='btn waves-effect waves-light' name='changePass'>Change Password</button>
+                <button type='submit' class='btn waves-effect green darken-2' name='changePass'>Change Password</button>
             </div>
         </div>
     </form>
 
-    <form id='logout' action='logout.php' method='post'>
-        <button type='submit' class='btn waves-effect waves-light' name='submit' onClick='logout.php'>Logout</button>
+    <form id='logout' class="col s6" action='logout.php' method='post'>
+        <div class="row">
+            <div class="input-field col s6">
+        <button type='submit' class='btn waves-effect yellow darken-2' name='submit' onClick='logout.php'>Logout</button>
+            </div>
+        </div>
     </form>
-    <form id='deactivate' action='deactivate.php' method='post'>
-    <button type='submit' class='btn waves-effect red' name='deactivate' onClick='deactivate.php'>Deactivate acount</button>
-</form>
+    <form id='deactivate' class="col s6" action='deactivate.php' method='post'>
+        <div class="row">
+            <div class="input-field col s6">
+                <button type='submit' class='btn waves-effect red' name='deactivate' onClick='deactivate.php'>Deactivate acount</button>
+            </div>
+        </div>
+    </form>
 </div>
 </div>
 <style>
@@ -761,6 +641,37 @@ if(mysqli_num_rows($res)>0){
 </style>
 <script>
     $(document).ready(function(){
+        $('.dropdown-trigger').dropdown();
+
+        $('.report').on('click',function(){
+            $('#modal2').modal();
+            $('#modal2').modal('open');
+            $('#modal2').html('<form action="report.php" method="post">' +
+                '<h4>Report this post</h4>' +
+                '<input type="text" value="'+$(this).attr('id')+'" hidden name="postID">' +
+                '<p>' +
+                '<input name="group1" type="radio" id="radio1"  value="offensiveLanguageBehaviour" />' +
+                '<label for="radio1">Offensive language/ behaviour</label>' +
+                '</p>' +
+                '<p>' +
+                '<input name="group1" type="radio" id="radio2" value="abusiveHarrasive" />' +
+                '<label for="radio2">Abusive or harrasive</label>' +
+                '</p>' +
+                '<p>' +
+                '<input name="group1" type="radio" id="radio3" value="spam" />' +
+                '<label for="radio3">It\'s spam</label>' +
+                '</p>'+
+                '<div class=\'row\'><div class="input-field col s12">'+
+                '<label for="comments">Comments</label>' +
+                '<input class="reviewComments" type="text" data-length="256" name="comments">' +
+
+                '<button type="submit" name="postReport" class="btn waves-effect waves-green green darken-2">Send Report</button>' +
+                '</div></div>'+
+                '</form>');
+            $('.reviewComments').characterCounter();
+//       $('.modal').html($(this).attr('id'));
+
+        });
         $('.edit-image').mouseover(function(){
             $(this).attr("src","http://localhost/myClimb/images/edit.png");
             $(this).addClass("grayscale");
@@ -770,11 +681,10 @@ if(mysqli_num_rows($res)>0){
         }).on('click', function(){
             $('.fileUpload').click();
         });
-        var string;
         $("input:file").change(function (){
             $('.uploadImage').submit();
         });
-
+        var string;
         $('#calendar').fullCalendar({
             // put your options and callbacks here
             header: {
@@ -797,8 +707,8 @@ if(mysqli_num_rows($res)>0){
             },
             selectable:true,
             eventClick: function(calEvent, jsEvent, view){
-                $('.modal').modal();
-                $('.modal').modal('open');
+                $('#modal1').modal();
+                $('#modal1').modal('open');
                 var title = calEvent.title;
                 var actualTitle = title.split(" - ");
                 $('.modal-content').html("");
@@ -816,7 +726,8 @@ if(mysqli_num_rows($res)>0){
                     string = "<p>From "+msToTime(calEvent.start)+" to "+msToTime(calEvent.end)+"</p>";
                 }});
 
-            }
+            },
+            eventColor: '#388E3C !important'
         });
         $(document).ajaxStop(function(){
             $('.modal-content').append(string);

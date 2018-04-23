@@ -13,7 +13,6 @@ echo '
       <a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons">menu</i></a>
       <a href="index.php" class="brand-logo"><img style="max-height: 64px;" src="images/logo_burned.png"></a>
       <ul id="nav-mobile" class="right hide-on-med-and-down">     
-        <li><a href="climbers.php">All Climbers</a></li>
         <li><a href="climbs.php">Climbs</a></li>
         <li><a href="messages.php">Messages</a></li>
         <li><a href="profile.php">'.$_SESSION["username"].'</a></li>
@@ -39,7 +38,6 @@ echo '
                 <a href="#!email"><span class="email">'.$_SESSION["email"].'</span></a>
             </div>
         </li>
-        <li><a href="climbers.php">All Climbers</a></li>
         <li><div class="divider"></div></li>
         <li><a href="climbs.php">Climbs</a></li>
         <li><div class="divider"></div></li>
@@ -56,11 +54,21 @@ echo '
         </form>  
         </li>
   </ul>
-    ';
+    <div class="allContent">';
 ?>
 <style>
     .dropdown-content li{
         cursor:default;
+    }
+    .allContent{
+        width:90%;
+        margin:0 auto;
+    }
+    @media only screen and (max-width: 600px){
+        .allContent{
+            width:100%;
+            margin:0 auto;
+        }
     }
     .checkBox{
         opacity: 100 !important;
