@@ -14,10 +14,7 @@ if(isset($_SESSION['username'])) {
 }
 if(isset($_GET['id'])){
     $userID = $_GET['id'];
-    if(isset($_SESSION['username'])) {
-        echo "<button class='right btn waves-effect green darken-2'><a href='messages.php?user=" . $userID . "' style='color:#fff'>Message user</a></button>";
-        echo "<button class='right btn waves-effect green darken-2'><a href='meetup.php?user=" . $userID . "' style='color:#fff'>Climb with user</a></button>";
-    }
+
     //work out average grade
     $allClimbsArray = array();
     $findAllClimbs = "SELECT * FROM hasClimbed WHERE userID='".$_GET['id']."'";
@@ -56,6 +53,10 @@ if(isset($_GET['id'])){
                 echo "</h5>";
             }
         }
+    }
+    if(isset($_SESSION['username'])) {
+        echo "<button class='left btn waves-effect green darken-2'><a href='messages.php?user=" . $userID . "' style='color:#fff'>Message user</a></button>";
+        echo "<button class='left btn waves-effect green darken-2' style='margin-left:5%;'><a href='meetup.php?user=" . $userID . "' style='color:#fff'>Climb with user</a></button>";
     }
     echo '<div class="row">
         <div class="col s12">
@@ -280,3 +281,4 @@ function date_compare($a, $b)
 
     })
 </script>
+<?php include('footer.php');?>

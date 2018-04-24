@@ -226,6 +226,8 @@ if(mysqli_num_rows($res)>0){
         showPost($row);
         echo "</div>";
     }
+}else{
+    echo "You don't appear to have posted any statuses, you can do this on the homepage, by using the floating action button at the bottom right of the screen";
 }
 echo "</div>";
 echo "<div class='col s12' id='meetings'>";
@@ -746,3 +748,4 @@ if(mysqli_num_rows($res)>0){
         }
     });
 </script>
+<?php include('footer.php');?>

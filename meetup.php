@@ -146,3 +146,5 @@ include('connect.php');
         })
     });
 </script>
+<?php include('footer.php');?>
+

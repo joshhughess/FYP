@@ -66,3 +66,5 @@ if($_POST['climbID']){
         });
     });
 </script>
+<?php include('footer.php');?>
+

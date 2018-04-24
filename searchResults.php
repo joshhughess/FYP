@@ -100,6 +100,7 @@ function getTime($lastActiveTime){
 }
 
 ?>
+</div>
 <style>
     .tabs .tab a{
         color:#000;
@@ -119,3 +120,4 @@ function getTime($lastActiveTime){
         background-color:#000;
     }
 </style>
+<?php include('footer.php');?>

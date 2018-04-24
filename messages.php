@@ -207,3 +207,4 @@ if(isset($_SESSION['username'])) {
         }
     });
 </script>
+<?php include('footer.php');?>

@@ -85,3 +85,4 @@ if($_GET['id']){
     echo "error";
 }
 ?>
+<?php include('footer.php');?>

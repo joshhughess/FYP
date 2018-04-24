@@ -173,7 +173,7 @@ if(isset($_SESSION['username'])){
 }else{
     echo "<h5>News Feed</h5>";
 }
-echo '<div class=\'wrapper\'><div style=\'width: 65%;\' class="left"><div class="input-field col s12">
+echo '<div class=\'wrapper\'><div style=\'width: 65%;\' class="filter left"><div class="input-field col s12">
     <select class="mySelect">
       <option value="test" disabled selected>Choose your option</option>
       <option value="mostVotes">Most Votes</option>
@@ -304,6 +304,7 @@ if(isset($_SESSION['username'])) {
     </a>
   </div>';
 }
+echo "</div></div>";
 function getTime($lastActiveTime){
     date_default_timezone_set('Europe/London');
     $dateTime = date("Y-m-d h:i:s");
@@ -396,7 +397,9 @@ function getTime($lastActiveTime){
         if($(window).width()<=950){
             $('.featuredClimb').removeClass('right');
             $('.featuredClimb').css('width','100%');
-            $('.allPosts').removeClass('right');
+            $('.filter').removeClass('left');
+            $('.filter').css('width','100%');
+            $('.allPosts').removeClass('left');
             $('.allPosts').css('width','100%');
         }
         $(window).resize(function() {
@@ -406,11 +409,15 @@ function getTime($lastActiveTime){
             if($(window).width()<=950){
                 $('.featuredClimb').removeClass('right');
                 $('.featuredClimb').css('width','100%');
-                $('.allPosts').removeClass('right');
+                $('.filter').removeClass('left');
+                $('.filter').css('width','100%');
+                $('.allPosts').removeClass('left');
                 $('.allPosts').css('width','100%');
             }else{
                 $('.featuredClimb').addClass('right');
                 $('.featuredClimb').css('width','32.5%');
+                $('.filter').addClass('left');
+                $('.filter').css('width','65%');
                 $('.allPosts').addClass('left');
                 $('.allPosts').css('width','65%');
             }
@@ -462,4 +469,4 @@ function getTime($lastActiveTime){
     }
 </style>
 <script type='text/javascript' src='js/sendVote.js'></script>
-
+<?php include('footer.php');?>

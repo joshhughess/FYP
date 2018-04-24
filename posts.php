@@ -111,4 +111,6 @@ if(isset($_GET['postID'])){
         cursor:default;
     }
 </style>
+</div>
 <script type='text/javascript' src='js/sendVote.js'></script>
+<?php include('footer.php');?>
