@@ -1,0 +1,18 @@
+My Climb was my final year project, which was a social media website for climbers. I created the website mainly using PHP and MaterializeCSS with some jQuery and AJAX here and there.
+
+The website is purely data driven so may seem a little bare until data is entered (such as a user logging in).
+
+The main website features were - 
+
+  Allowing the users to login
+  Allowing users to follow/unfollow one another
+  Allowing users to message one another
+  Allowing users to say what climbs they have climbed and leave reviews on the climbs
+  Show the different climbs that are on the website currently
+  Show the different users that are currently using the site (along with their average grade climbed based on what they have previously submitted)
+  Allow the users to have preference settings such as (don't show me to other users, don't allow anyone to view my profile that isn't following me, follow requests need approving etc.)
+  Allow users to set up meetings with one another (validation was key here to ensure no overlaps happened for either party)
+  Allow users to see a dashboard showing them their grade, reviews, previous climbs, and what they should climb next based on a number of criteria.
+  
+The website also sent emails to each user when something important happened, such as a message being recieved, a new follow or a new meet request.
+  
